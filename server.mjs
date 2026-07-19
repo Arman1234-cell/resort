@@ -133,6 +133,8 @@ app.post('/api/booking-notifications', async (req, res) => {
   });
 });
 
+import Razorpay from 'razorpay';
+
 app.post('/api/create-order', async (req, res) => {
   const credentials = getRazorpayCredentials();
 
@@ -149,31 +151,16 @@ app.post('/api/create-order', async (req, res) => {
   }
 
   try {
-    const auth = Buffer.from(`${credentials.keyId}:${credentials.keySecret}`).toString('base64');
-    const response = await fetch(RAZORPAY_ORDERS_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${auth}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        amount,
-        currency,
-        receipt
-      })
+    const instance = new Razorpay({
+      key_id: credentials.keyId,
+      key_secret: credentials.keySecret,
     });
 
-    const order = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      console.error('Razorpay order creation failed:', order || response.statusText);
-      return res.status(response.status === 401 ? 401 : 500).json({
-        message:
-          response.status === 401
-            ? 'Razorpay authentication failed.'
-            : 'Unable to create Razorpay order.'
-      });
-    }
+    const order = await instance.orders.create({
+      amount,
+      currency,
+      receipt
+    });
 
     return res.json({
       order_id: order.id,
@@ -182,6 +169,12 @@ app.post('/api/create-order', async (req, res) => {
     });
   } catch (error) {
     console.error('Razorpay order request failed:', error);
+    
+    // Check for authentication failure specifically
+    if (error && error.statusCode === 401) {
+      return res.status(401).json({ message: 'Razorpay authentication failed.' });
+    }
+    
     return res.status(500).json({ message: 'Unable to create Razorpay order.' });
   }
 });
