@@ -224,6 +224,10 @@ app.get('*', (_req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Green Coast server running on http://localhost:${port}`);
-});
+export default app;
+
+if (process.env.VERCEL !== '1') {
+  app.listen(port, () => {
+    console.log(`Green Coast server running on http://localhost:${port}`);
+  });
+}
