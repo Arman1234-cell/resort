@@ -143,8 +143,8 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
 
   const bookingMessage = useMemo(() => {
     const id = bookingId || 'Pending';
-    return buildBookingMessage(id, paymentTxId || utrNumber);
-  }, [bookingId, name, selectedRoomIndex, checkIn, checkOut, nights, total, paymentTxId, utrNumber]);
+    return buildBookingMessage(id, paymentTxId || 'Not available');
+  }, [bookingId, name, selectedRoomIndex, checkIn, checkOut, nights, total, paymentTxId]);
 
 
   const customerWhatsappUrl = `https://wa.me/${normalizeIndianPhone(whatsapp)}?text=${encodeURIComponent(bookingMessage)}`;
