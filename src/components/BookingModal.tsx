@@ -1,6 +1,52 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Check, CheckCircle, Copy, Mail, MessageSquare, QrCode, ShieldCheck, Smartphone, X } from 'lucide-react';
 
+interface RazorpaySuccessResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayFailureResponse {
+  error?: {
+    description?: string;
+    reason?: string;
+  };
+}
+
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  notes: Record<string, string>;
+  theme: {
+    color: string;
+  };
+  modal: {
+    ondismiss: () => void;
+  };
+  handler: (response: RazorpaySuccessResponse) => void;
+}
+
+interface RazorpayCheckout {
+  open: () => void;
+  on: (event: 'payment.failed', handler: (response: RazorpayFailureResponse) => void) => void;
+}
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: RazorpayOptions) => RazorpayCheckout;
+  }
+}
+
 interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -57,6 +103,8 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   const [bookingId, setBookingId] = useState('');
   const [notifications, setNotifications] = useState<NotificationAlert[]>([]);
   const [paymentTxId, setPaymentTxId] = useState('');
+  const [paymentGateway, setPaymentGateway] = useState('Razorpay Standard Checkout');
+  const [paymentError, setPaymentError] = useState('');
   const [notificationStatus, setNotificationStatus] = useState<'idle' | 'sending' | 'sent' | 'skipped' | 'failed'>('idle');
   const [notificationMessage, setNotificationMessage] = useState('');
 
@@ -81,6 +129,8 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
       setUtrNumber('');
       setBookingId('');
       setPaymentTxId('');
+      setPaymentGateway('Razorpay Standard Checkout');
+      setPaymentError('');
       setNotificationStatus('idle');
       setNotificationMessage('');
       setNotifications([]);
@@ -118,7 +168,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   if (!isOpen) return null;
 
   function buildBookingMessage(id: string, txId: string) {
-    return `Hello ${name}, your booking ${id} at ${RESORT_NAME} is confirmed.\nRoom: ${ROOMS[selectedRoomIndex].name}\nDates: ${checkIn} to ${checkOut} (${nights} ${nights === 1 ? 'night' : 'nights'})\nAmount paid: ${formatInr(total)}\nUPI transaction: ${txId}\nThank you for booking with us.`;
+    return `Hello ${name}, your booking ${id} at ${RESORT_NAME} is confirmed.\nRoom: ${ROOMS[selectedRoomIndex].name}\nDates: ${checkIn} to ${checkOut} (${nights} ${nights === 1 ? 'night' : 'nights'})\nAmount paid: ${formatInr(total)}\nPayment reference: ${txId}\nThank you for booking with us.`;
   }
 
   const handleNextToPayment = (e: React.FormEvent) => {
@@ -135,6 +185,42 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     }
 
     setStep('payment');
+  };
+
+  const saveConfirmedBooking = (
+    id: string,
+    transactionId: string,
+    gateway: string,
+    payerInfo = email
+  ) => {
+    setBookingId(id);
+    setPaymentTxId(transactionId);
+    setPaymentGateway(gateway);
+    setStep('success');
+
+    const existingBookingsStr = localStorage.getItem('greencoast_bookings') || '[]';
+    const existingBookings = JSON.parse(existingBookingsStr);
+    const newBooking = {
+      id,
+      name,
+      email,
+      whatsapp,
+      roomName: ROOMS[selectedRoomIndex].name,
+      checkIn,
+      checkOut,
+      nights,
+      amount: total,
+      currency: 'INR',
+      status: 'Paid',
+      gateway,
+      transactionId,
+      payerInfo,
+      timestamp: new Date().toISOString()
+    };
+
+    existingBookings.unshift(newBooking);
+    localStorage.setItem('greencoast_bookings', JSON.stringify(existingBookings));
+    void sendAutomaticBookingNotification(id, transactionId);
   };
 
   const triggerBookingNotifications = (id: string, result?: NotificationResult) => {
@@ -225,6 +311,113 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     }
   };
 
+  const handleRazorpayCheckout = async () => {
+    const key = import.meta.env.VITE_RAZORPAY_KEY_ID;
+
+    if (!key) {
+      setPaymentError('Razorpay public key is not configured. Add VITE_RAZORPAY_KEY_ID to .env.');
+      return;
+    }
+
+    if (!window.Razorpay) {
+      setPaymentError('Razorpay Checkout could not be loaded. Please refresh and try again.');
+      return;
+    }
+
+    const generatedId = `GC-IN-${Math.floor(100000 + Math.random() * 900000)}`;
+    setPaymentError('');
+    setBookingId(generatedId);
+    setStep('processing');
+
+    try {
+      const orderResponse = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: Math.max(100, Math.round(total * 100)),
+          currency: 'INR',
+          receipt: generatedId
+        })
+      });
+
+      const order = await orderResponse.json().catch(() => null);
+
+      if (!orderResponse.ok) {
+        throw new Error(order?.message || 'Unable to create a Razorpay order.');
+      }
+
+      const checkout = new window.Razorpay({
+        key,
+        amount: order.amount,
+        currency: order.currency,
+        name: RESORT_NAME,
+        description: `${ROOMS[selectedRoomIndex].name} booking`,
+        order_id: order.order_id,
+        prefill: {
+          name,
+          email,
+          contact: normalizeIndianPhone(whatsapp)
+        },
+        notes: {
+          booking_id: generatedId,
+          room: ROOMS[selectedRoomIndex].name,
+          check_in: checkIn,
+          check_out: checkOut
+        },
+        theme: {
+          color: '#050505'
+        },
+        modal: {
+          ondismiss: () => {
+            setStep('payment');
+            setPaymentError('Payment was cancelled before completion.');
+          }
+        },
+        handler: async (response) => {
+          try {
+            const verifyResponse = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(response)
+            });
+
+            const verification = await verifyResponse.json().catch(() => null);
+
+            if (!verifyResponse.ok || !verification?.success) {
+              throw new Error(verification?.message || 'Payment verification failed.');
+            }
+
+            saveConfirmedBooking(
+              generatedId,
+              response.razorpay_payment_id,
+              'Razorpay Standard Checkout',
+              response.razorpay_order_id
+            );
+          } catch (error) {
+            console.error(error);
+            setStep('payment');
+            setPaymentError(error instanceof Error ? error.message : 'Payment verification failed.');
+          }
+        }
+      });
+
+      checkout.on('payment.failed', (response) => {
+        setStep('payment');
+        setPaymentError(
+          response.error?.description ||
+            response.error?.reason ||
+            'Razorpay payment failed. Please try again.'
+        );
+      });
+
+      checkout.open();
+    } catch (error) {
+      console.error(error);
+      setStep('payment');
+      setPaymentError(error instanceof Error ? error.message : 'Unable to start Razorpay Checkout.');
+    }
+  };
+
   const handleConfirmUpiPayment = () => {
     if (!utrNumber.trim() || utrNumber.trim().length < 6) {
       alert('Please enter the UPI UTR / reference number after payment.');
@@ -236,33 +429,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     setTimeout(() => {
       const generatedId = `GC-IN-${Math.floor(100000 + Math.random() * 900000)}`;
       const cleanUtr = utrNumber.trim().toUpperCase();
-      setBookingId(generatedId);
-      setPaymentTxId(cleanUtr);
-      setStep('success');
-
-      const existingBookingsStr = localStorage.getItem('greencoast_bookings') || '[]';
-      const existingBookings = JSON.parse(existingBookingsStr);
-      const newBooking = {
-        id: generatedId,
-        name,
-        email,
-        whatsapp,
-        roomName: ROOMS[selectedRoomIndex].name,
-        checkIn,
-        checkOut,
-        nights,
-        amount: total,
-        currency: 'INR',
-        status: 'Paid',
-        gateway: 'Custom UPI',
-        transactionId: cleanUtr,
-        payerInfo: email,
-        timestamp: new Date().toISOString()
-      };
-
-      existingBookings.unshift(newBooking);
-      localStorage.setItem('greencoast_bookings', JSON.stringify(existingBookings));
-      void sendAutomaticBookingNotification(generatedId, cleanUtr);
+      saveConfirmedBooking(generatedId, cleanUtr, 'Custom UPI');
     }, 1500);
   };
 
@@ -320,8 +487,8 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
               <h3 className="font-serif text-base font-medium tracking-tight text-white uppercase">
                 {step === 'form' && 'Secure Resort Booking'}
-                {step === 'payment' && 'Custom UPI Gateway'}
-                {step === 'processing' && 'Verifying UPI Payment'}
+                {step === 'payment' && 'Secure Payment'}
+                {step === 'processing' && 'Processing Payment'}
                 {step === 'success' && 'Payment Successful'}
               </h3>
             </div>
@@ -440,7 +607,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                 type="submit"
                 className="w-full py-3.5 bg-white text-neutral-950 font-display text-[10px] tracking-[0.2em] font-semibold uppercase hover:bg-neutral-200 transition-colors cursor-pointer rounded-xs"
               >
-                Proceed To UPI Payment
+                Proceed To Payment
               </button>
             </form>
           )}
@@ -457,6 +624,36 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                 <span className="text-[10px] text-neutral-400 font-sans mt-0.5 block">
                   Booking for {name} ({ROOMS[selectedRoomIndex].name})
                 </span>
+              </div>
+
+              {paymentError && (
+                <div className="border border-red-900/60 bg-red-950/20 p-3 rounded-xs">
+                  <p className="font-sans text-xs text-red-200 leading-relaxed">{paymentError}</p>
+                </div>
+              )}
+
+              <div className="border border-neutral-900 bg-[#030303] p-4 rounded-xs space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-neutral-900 border border-neutral-850 rounded-xs">
+                    <ShieldCheck className="w-5 h-5 text-green-400" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-sans text-xs text-neutral-200 font-semibold">
+                      Razorpay Standard Checkout
+                    </h4>
+                    <p className="font-sans text-[11px] text-neutral-500 leading-relaxed">
+                      Pay securely by card, UPI, netbanking, or wallet. Your booking is confirmed only after server verification.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleRazorpayCheckout}
+                  className="w-full py-3.5 bg-white text-neutral-950 font-display text-[10px] tracking-[0.2em] uppercase hover:bg-neutral-200 transition-all font-semibold cursor-pointer rounded-xs border-0"
+                >
+                  Pay Securely With Razorpay
+                </button>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -498,7 +695,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                     </div>
                     <div>
                       <h4 className="font-sans text-xs text-neutral-300 font-semibold mb-1">
-                        Green Coast Custom UPI
+                        Manual UPI Fallback
                       </h4>
                       <p className="font-sans text-[11px] text-neutral-500 leading-normal max-w-[245px] mx-auto">
                         Pay to the resort UPI ID, then enter the UTR number to confirm your room booking.
@@ -577,7 +774,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
 
               <div className="text-center space-y-1">
                 <h4 className="font-serif text-sm text-neutral-200 font-medium tracking-wide">
-                  Verifying UPI Reference...
+                  Verifying Payment...
                 </h4>
                 <p className="font-sans text-xs text-neutral-500 leading-relaxed max-w-xs">
                   Confirming your transaction and preparing booking messages.
@@ -627,10 +824,10 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-500">Gateway</span>
-                  <span className="text-neutral-200 font-medium">Custom UPI</span>
+                  <span className="text-neutral-200 font-medium text-right">{paymentGateway}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-500">UPI UTR</span>
+                  <span className="text-neutral-500">Payment ID</span>
                   <span className="font-mono text-neutral-200 font-semibold truncate max-w-[180px]" title={paymentTxId}>
                     {paymentTxId}
                   </span>

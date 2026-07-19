@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import crypto from 'crypto';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -11,7 +12,21 @@ const port = Number(process.env.PORT || 3002);
 
 app.use(express.json({ limit: '1mb' }));
 
+const RAZORPAY_ORDERS_URL = 'https://api.razorpay.com/v1/orders';
+const MIN_RAZORPAY_AMOUNT = 100;
+
 const normalizePhone = (value = '') => value.replace(/\D/g, '');
+
+const getRazorpayCredentials = () => {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+  if (!keyId || !keySecret) {
+    return null;
+  }
+
+  return { keyId, keySecret };
+};
 
 const sendWhatsappText = async ({ to, message }) => {
   const token = process.env.WHATSAPP_ACCESS_TOKEN;
@@ -115,6 +130,98 @@ app.post('/api/booking-notifications', async (req, res) => {
     resortWhatsapp,
     email,
     message: statusMessage
+  });
+});
+
+app.post('/api/create-order', async (req, res) => {
+  const credentials = getRazorpayCredentials();
+
+  if (!credentials) {
+    return res.status(500).json({ message: 'Razorpay credentials are not configured.' });
+  }
+
+  const amount = Number(req.body?.amount);
+  const currency = String(req.body?.currency || 'INR').toUpperCase();
+  const receipt = String(req.body?.receipt || `receipt_${Date.now()}`).slice(0, 40);
+
+  if (!Number.isInteger(amount) || amount < MIN_RAZORPAY_AMOUNT) {
+    return res.status(400).json({ message: 'Amount must be at least 100 paise.' });
+  }
+
+  try {
+    const auth = Buffer.from(`${credentials.keyId}:${credentials.keySecret}`).toString('base64');
+    const response = await fetch(RAZORPAY_ORDERS_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${auth}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount,
+        currency,
+        receipt
+      })
+    });
+
+    const order = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      console.error('Razorpay order creation failed:', order || response.statusText);
+      return res.status(response.status === 401 ? 401 : 500).json({
+        message:
+          response.status === 401
+            ? 'Razorpay authentication failed.'
+            : 'Unable to create Razorpay order.'
+      });
+    }
+
+    return res.json({
+      order_id: order.id,
+      amount: order.amount,
+      currency: order.currency
+    });
+  } catch (error) {
+    console.error('Razorpay order request failed:', error);
+    return res.status(500).json({ message: 'Unable to create Razorpay order.' });
+  }
+});
+
+app.post('/api/verify-payment', (req, res) => {
+  const credentials = getRazorpayCredentials();
+
+  if (!credentials) {
+    return res.status(500).json({ message: 'Razorpay credentials are not configured.' });
+  }
+
+  const {
+    razorpay_payment_id: paymentId,
+    razorpay_order_id: orderId,
+    razorpay_signature: signature
+  } = req.body || {};
+
+  if (!paymentId || !orderId || !signature) {
+    return res.status(400).json({ message: 'Missing Razorpay payment verification fields.' });
+  }
+
+  const generatedSignature = crypto
+    .createHmac('sha256', credentials.keySecret)
+    .update(`${orderId}|${paymentId}`)
+    .digest('hex');
+
+  const signatureBuffer = Buffer.from(String(signature), 'hex');
+  const generatedBuffer = Buffer.from(generatedSignature, 'hex');
+  const isValid =
+    signatureBuffer.length === generatedBuffer.length &&
+    crypto.timingSafeEqual(signatureBuffer, generatedBuffer);
+
+  if (!isValid) {
+    return res.status(400).json({ message: 'Razorpay signature verification failed.' });
+  }
+
+  return res.json({
+    success: true,
+    payment_id: paymentId,
+    order_id: orderId
   });
 });
 
