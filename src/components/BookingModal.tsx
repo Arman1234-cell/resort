@@ -98,8 +98,6 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
-  const [upiApp, setUpiApp] = useState<'qr' | 'gpay' | 'phonepe' | 'paytm' | 'bhim'>('qr');
-  const [utrNumber, setUtrNumber] = useState('');
   const [bookingId, setBookingId] = useState('');
   const [notifications, setNotifications] = useState<NotificationAlert[]>([]);
   const [paymentTxId, setPaymentTxId] = useState('');
@@ -125,8 +123,6 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
       setName('');
       setEmail('');
       setWhatsapp('');
-      setUpiApp('qr');
-      setUtrNumber('');
       setBookingId('');
       setPaymentTxId('');
       setPaymentGateway('Razorpay Standard Checkout');
@@ -150,16 +146,6 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     return buildBookingMessage(id, paymentTxId || utrNumber);
   }, [bookingId, name, selectedRoomIndex, checkIn, checkOut, nights, total, paymentTxId, utrNumber]);
 
-  const upiUrl = useMemo(() => {
-    const params = new URLSearchParams({
-      pa: RESORT_UPI_ID,
-      pn: RESORT_NAME,
-      am: total.toString(),
-      cu: 'INR',
-      tn: `Room booking for ${name || 'Guest'}`
-    });
-    return `upi://pay?${params.toString()}`;
-  }, [name, total]);
 
   const customerWhatsappUrl = `https://wa.me/${normalizeIndianPhone(whatsapp)}?text=${encodeURIComponent(bookingMessage)}`;
   const resortWhatsappUrl = `https://wa.me/${RESORT_WHATSAPP}?text=${encodeURIComponent(`New paid booking received:\n${bookingMessage}`)}`;
@@ -418,29 +404,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     }
   };
 
-  const handleConfirmUpiPayment = () => {
-    if (!utrNumber.trim() || utrNumber.trim().length < 6) {
-      alert('Please enter the UPI UTR / reference number after payment.');
-      return;
-    }
 
-    setStep('processing');
-
-    setTimeout(() => {
-      const generatedId = `GC-IN-${Math.floor(100000 + Math.random() * 900000)}`;
-      const cleanUtr = utrNumber.trim().toUpperCase();
-      saveConfirmedBooking(generatedId, cleanUtr, 'Custom UPI');
-    }, 1500);
-  };
-
-  const copyUpiId = async () => {
-    try {
-      await navigator.clipboard.writeText(RESORT_UPI_ID);
-      alert('UPI ID copied.');
-    } catch {
-      alert(`UPI ID: ${RESORT_UPI_ID}`);
-    }
-  };
 
   return (
     <>
@@ -656,113 +620,13 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <div className="md:col-span-5 flex flex-col gap-2.5">
-                  <span className="font-mono text-[9px] text-neutral-500 tracking-widest uppercase mb-1">
-                    Pay Using
-                  </span>
-                  {[
-                    { id: 'qr', name: 'Scan UPI QR' },
-                    { id: 'gpay', name: 'Google Pay' },
-                    { id: 'phonepe', name: 'PhonePe' },
-                    { id: 'paytm', name: 'Paytm' },
-                    { id: 'bhim', name: 'BHIM UPI' }
-                  ].map((gateway) => (
-                    <button
-                      key={gateway.id}
-                      type="button"
-                      onClick={() => setUpiApp(gateway.id as typeof upiApp)}
-                      className={`p-3 text-[11px] text-left border flex items-center justify-between transition-all rounded-xs cursor-pointer ${
-                        upiApp === gateway.id
-                          ? 'border-white bg-neutral-900 text-white'
-                          : 'border-neutral-900 bg-neutral-950 hover:border-neutral-800 text-neutral-400'
-                      }`}
-                    >
-                      <span className="font-sans font-medium">{gateway.name}</span>
-                      {upiApp === gateway.id ? (
-                        <Check className="w-3.5 h-3.5 text-white" />
-                      ) : (
-                        <Smartphone className="w-3.5 h-3.5 text-neutral-600" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="md:col-span-7 flex flex-col items-center justify-center p-4 border border-neutral-900 rounded-xs bg-[#030303] min-h-[300px]">
-                  <div className="w-full flex flex-col items-center justify-center space-y-4 text-center">
-                    <div className="p-2 bg-neutral-900 border border-neutral-850 rounded-xs">
-                      <ShieldCheck className="w-5 h-5 text-green-400" />
-                    </div>
-                    <div>
-                      <h4 className="font-sans text-xs text-neutral-300 font-semibold mb-1">
-                        Manual UPI Fallback
-                      </h4>
-                      <p className="font-sans text-[11px] text-neutral-500 leading-normal max-w-[245px] mx-auto">
-                        Pay to the resort UPI ID, then enter the UTR number to confirm your room booking.
-                      </p>
-                    </div>
-
-                    <div className="w-36 h-36 bg-white p-2 rounded-xs flex items-center justify-center relative shadow-md">
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=136x136&data=${encodeURIComponent(upiUrl)}`}
-                        alt="UPI QR Code"
-                        className="w-32 h-32 object-contain"
-                      />
-                    </div>
-
-                    <div className="w-full space-y-3">
-                      <div className="flex items-center justify-between gap-3 p-3 bg-neutral-950 border border-neutral-900 rounded-xs text-left">
-                        <div>
-                          <span className="font-mono text-[8px] text-neutral-500 tracking-widest uppercase block">
-                            Resort UPI ID
-                          </span>
-                          <span className="font-mono text-[11px] text-neutral-100 select-all">{RESORT_UPI_ID}</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={copyUpiId}
-                          className="p-2 border border-neutral-850 text-neutral-400 hover:text-white hover:border-neutral-700 rounded-xs"
-                          title="Copy UPI ID"
-                        >
-                          <Copy className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-
-                      {upiApp !== 'qr' && (
-                        <a
-                          href={upiUrl}
-                          className="block w-full py-3 bg-white text-neutral-950 font-display text-[9px] tracking-widest uppercase hover:bg-neutral-200 transition-all font-semibold cursor-pointer rounded-xs border-0"
-                        >
-                          Open {upiApp === 'gpay' ? 'Google Pay' : upiApp === 'phonepe' ? 'PhonePe' : upiApp === 'paytm' ? 'Paytm' : 'BHIM UPI'}
-                        </a>
-                      )}
-
-                      <input
-                        type="text"
-                        value={utrNumber}
-                        onChange={(e) => setUtrNumber(e.target.value)}
-                        placeholder="Enter UPI UTR / Reference No."
-                        className="w-full bg-neutral-900 border border-neutral-850 px-3.5 py-2.5 rounded-xs text-xs font-mono text-neutral-100 outline-hidden focus:border-neutral-500 uppercase"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-neutral-900">
+              <div className="pt-3 border-t border-neutral-900 mt-6">
                 <button
                   type="button"
                   onClick={() => setStep('form')}
-                  className="py-3 border border-neutral-850 text-neutral-400 font-display text-[9px] tracking-widest uppercase hover:text-white hover:border-neutral-750 transition-all cursor-pointer rounded-xs bg-transparent"
+                  className="w-full py-3 border border-neutral-850 text-neutral-400 font-display text-[9px] tracking-widest uppercase hover:text-white hover:border-neutral-750 transition-all cursor-pointer rounded-xs bg-transparent"
                 >
                   Back To Form
-                </button>
-                <button
-                  type="button"
-                  onClick={handleConfirmUpiPayment}
-                  className="py-3 bg-white text-neutral-950 font-display text-[9px] tracking-widest uppercase hover:bg-neutral-250 transition-all font-semibold cursor-pointer rounded-xs border-0"
-                >
-                  Confirm Paid
                 </button>
               </div>
             </div>
