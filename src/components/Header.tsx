@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
   onNavigate: (id: string) => void;
@@ -8,6 +9,8 @@ interface HeaderProps {
 }
 
 export default function Header({ onNavigate, currentSection, onBookNow, onOpenAdmin }: HeaderProps) {
+  const { user, logout } = useAuth();
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-neutral-950/80 backdrop-blur-md border-b border-neutral-900 px-6 lg:px-12 py-4 transition-all">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -28,16 +31,32 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
         <div className="hidden md:flex items-center p-1 rounded-full bg-neutral-900/80 border border-neutral-800 transition-all">
           <button 
             onClick={() => onNavigate('hero-3')}
-            className="px-5 py-1.5 text-[11px] font-sans tracking-widest uppercase font-medium text-neutral-200 hover:text-white transition-colors rounded-full bg-neutral-800 shadow-xs cursor-pointer"
+            className="px-5 py-1.5 text-[11px] font-sans tracking-widest uppercase font-medium text-neutral-200 hover:text-white transition-colors rounded-full bg-neutral-800 shadow-xs cursor-pointer mr-1"
           >
             ROOMS
           </button>
-          <button 
-            onClick={onOpenAdmin}
-            className="px-5 py-1.5 text-[11px] font-sans tracking-widest uppercase font-medium text-neutral-500 hover:text-neutral-300 transition-colors rounded-full cursor-pointer"
-          >
-            OWNER PORTAL
-          </button>
+          
+          {user ? (
+            <div className="flex items-center gap-3 px-3 py-1 rounded-full">
+              <img src={user.avatar} alt={user.name} className="w-5 h-5 rounded-full border border-neutral-700" referrerPolicy="no-referrer" />
+              <span className="text-[11px] font-sans tracking-wide text-white truncate max-w-[100px]">{user.name}</span>
+              {user.isAdmin && (
+                <button onClick={onOpenAdmin} className="text-[9px] font-mono text-green-400 uppercase tracking-widest hover:text-green-300 cursor-pointer transition-colors border-l border-neutral-700 pl-3">
+                  Dashboard
+                </button>
+              )}
+              <button onClick={logout} className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest hover:text-red-400 cursor-pointer transition-colors border-l border-neutral-700 pl-3">
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={onOpenAdmin}
+              className="px-5 py-1.5 text-[11px] font-sans tracking-widest uppercase font-medium text-neutral-500 hover:text-neutral-300 transition-colors rounded-full cursor-pointer"
+            >
+              LOGIN
+            </button>
+          )}
         </div>
 
         {/* Right Area: CTA & Menu */}

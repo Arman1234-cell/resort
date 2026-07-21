@@ -9,12 +9,20 @@ import Footer from './components/Footer';
 import BookingModal from './components/BookingModal';
 import AdminDashboard from './components/AdminDashboard';
 import { SectionLink } from './types';
+import { useAuth } from './context/AuthContext';
 
 export default function App() {
   const [currentSection, setCurrentSection] = useState<string>('hero-1');
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedRoomIdx, setSelectedRoomIdx] = useState(0);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user?.isAdmin) {
+      setIsAdminOpen(true);
+    }
+  }, [user]);
 
   // Define section navigation lists
   const sections: SectionLink[] = [

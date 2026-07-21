@@ -3,6 +3,9 @@ import crypto from 'crypto';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,6 +14,7 @@ const app = express();
 const port = Number(process.env.PORT || 3002);
 
 app.use(express.json({ limit: '1mb' }));
+app.use(cookieParser());
 
 const RAZORPAY_ORDERS_URL = 'https://api.razorpay.com/v1/orders';
 const MIN_RAZORPAY_AMOUNT = 100;
@@ -216,6 +220,74 @@ app.post('/api/verify-payment', (req, res) => {
     payment_id: paymentId,
     order_id: orderId
   });
+});
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key';
+const OWNER_EMAIL = process.env.OWNER_EMAIL || 'sayedarmanullah@gmail.com';
+
+app.post('/api/auth/google', async (req, res) => {
+  const { credential } = req.body;
+  if (!credential) {
+    return res.status(400).json({ message: 'Google credential missing.' });
+  }
+
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: [process.env.GOOGLE_CLIENT_ID, process.env.VITE_GOOGLE_CLIENT_ID]
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload) {
+      return res.status(401).json({ message: 'Invalid Google token payload.' });
+    }
+
+    const { sub, name, email, picture } = payload;
+    const isAdmin = email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+
+    const user = {
+      id: sub,
+      name,
+      email,
+      avatar: picture,
+      isAdmin,
+      loginTime: new Date().toISOString()
+    };
+
+    const token = jwt.sign(user, JWT_SECRET, { expiresIn: '7d' });
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
+    return res.json({ success: true, user });
+  } catch (error) {
+    console.error('Google verification failed:', error);
+    return res.status(401).json({ message: 'Google authentication failed.' });
+  }
+});
+
+app.get('/api/auth/me', (req, res) => {
+  const token = req.cookies?.token;
+  if (!token) {
+    return res.status(401).json({ message: 'Not authenticated.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    return res.json({ success: true, user: decoded });
+  } catch (error) {
+    return res.status(401).json({ message: 'Invalid session.' });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  res.clearCookie('token');
+  return res.json({ success: true });
 });
 
 app.use(express.static(path.join(__dirname, 'dist')));

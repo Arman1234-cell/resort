@@ -11,9 +11,12 @@ import {
   Trash2,
   TrendingUp,
   Users,
+  Users,
   X
 } from 'lucide-react';
 import { ROOMS } from './BookingModal';
+import GoogleLoginButton from './GoogleLoginButton';
+import { useAuth } from '../context/AuthContext';
 
 interface BookingRecord {
   id: string;
@@ -54,27 +57,23 @@ const formatDate = (value: string) =>
 const isSameDate = (a: Date, b: Date) => a.toDateString() === b.toDateString();
 
 export default function AdminDashboard({ onClose }: AdminDashboardProps) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+  const { user, logout } = useAuth();
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Close the modal automatically if a normal user logs in from here.
+  useEffect(() => {
+    if (user && !user.isAdmin) {
+      onClose();
+    }
+  }, [user, onClose]);
+
+  const isLoggedIn = user?.isAdmin;
 
   useEffect(() => {
     const data = localStorage.getItem('greencoast_bookings') || '[]';
     setBookings(JSON.parse(data));
   }, [isLoggedIn]);
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim().toLowerCase() === OWNER_EMAIL) {
-      setIsLoggedIn(true);
-      setError('');
-      return;
-    }
-
-    setError('This email is not allowed to access the booking dashboard.');
-  };
 
   const handleCancelBooking = (id: string) => {
     if (window.confirm(`Are you sure you want to cancel booking ${id}?`)) {
@@ -168,50 +167,22 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
               <Lock className="w-5 h-5 text-neutral-300" />
             </div>
             <span className="font-mono text-[9px] text-green-400 uppercase tracking-widest">
-              Owner Access
+              Guest Access
             </span>
             <h2 className="font-serif text-3xl font-medium tracking-tight text-white mt-2">
-              Booking Dashboard
+              Login / Sign Up
             </h2>
             <p className="font-sans text-xs text-neutral-500 mt-3 leading-relaxed max-w-sm">
-              Enter the approved owner email to view bookings, daily revenue, guests, and room performance.
+              Sign in to manage your bookings or book a new stay.
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block font-mono text-[9px] text-neutral-500 uppercase tracking-widest mb-1.5">
-                Approved Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-850 pl-10 pr-3.5 py-3 rounded-xs text-sm font-sans text-neutral-100 outline-hidden focus:border-neutral-500"
-                  placeholder="sayedarmanullah@gmail.com"
-                />
-              </div>
-            </div>
+          <div className="mt-8">
+            <GoogleLoginButton />
+          </div>
 
-            {error && (
-              <p className="text-xs text-red-300 font-sans bg-red-950/20 border border-red-900/40 p-3">
-                {error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className="w-full py-3.5 bg-white text-neutral-950 font-display text-[10px] tracking-[0.2em] font-semibold uppercase hover:bg-neutral-200 transition-colors cursor-pointer border-0 mt-2 rounded-xs"
-            >
-              Open Dashboard
-            </button>
-          </form>
-
-          <div className="mt-5 p-3 border border-neutral-900 bg-neutral-900/40 text-[10px] text-neutral-500 leading-relaxed">
-            Demo note: this protects the local dashboard view only. For a live website, use Google Sign-In or server authentication.
+          <div className="mt-5 p-3 border border-neutral-900 bg-neutral-900/40 text-[10px] text-neutral-500 leading-relaxed text-center">
+            Guest sign up and owner login is powered by Google Authentication.
           </div>
         </div>
       </div>
@@ -231,10 +202,13 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
 
           <div className="flex items-center gap-3">
             <span className="hidden md:block font-mono text-[9px] text-neutral-500 border border-neutral-850 px-3 py-2">
-              {OWNER_EMAIL}
+              {user?.email}
             </span>
             <button
-              onClick={() => setIsLoggedIn(false)}
+              onClick={async () => {
+                await logout();
+                onClose();
+              }}
               className="flex items-center gap-2 px-4 py-2 border border-neutral-850 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all font-display text-[10px] tracking-widest uppercase cursor-pointer rounded-xs bg-transparent"
             >
               <LogOut className="w-3.5 h-3.5" />

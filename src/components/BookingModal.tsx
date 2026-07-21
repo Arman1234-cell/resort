@@ -712,39 +712,11 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-sm">
-                <a
-                  href={customerWhatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="py-3 bg-green-500 text-neutral-950 font-display text-[9px] tracking-widest uppercase hover:bg-green-400 transition-colors cursor-pointer rounded-xs border-0 flex items-center justify-center gap-2"
-                >
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  WhatsApp Guest
-                </a>
-                <a
-                  href={mailUrl}
-                  className="py-3 bg-white text-neutral-950 font-display text-[9px] tracking-widest uppercase hover:bg-neutral-200 transition-colors cursor-pointer rounded-xs border-0 flex items-center justify-center gap-2"
-                >
-                  <Mail className="w-3.5 h-3.5" />
-                  Email Guest
-                </a>
-                <a
-                  href={resortWhatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="sm:col-span-2 py-3 border border-neutral-850 text-neutral-300 font-display text-[9px] tracking-widest uppercase hover:text-white hover:border-neutral-700 transition-colors cursor-pointer rounded-xs flex items-center justify-center gap-2"
-                >
-                  <QrCode className="w-3.5 h-3.5" />
-                  Send Booking To Resort WhatsApp
-                </a>
-              </div>
-
               <button
                 onClick={onClose}
-                className="w-full max-w-sm py-3 bg-neutral-900 text-neutral-200 font-display text-[10px] tracking-widest uppercase hover:bg-neutral-800 transition-colors cursor-pointer rounded-xs border border-neutral-800"
+                className="w-full max-w-sm py-3 bg-neutral-900 text-neutral-200 font-display text-[10px] tracking-widest uppercase hover:bg-neutral-800 transition-colors cursor-pointer rounded-xs border border-neutral-800 mt-4"
               >
-                Return To Resort Website
+                Close
               </button>
             </div>
           )}
