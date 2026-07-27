@@ -281,8 +281,8 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
         title: autoSent ? 'WhatsApp notification handled' : 'WhatsApp fallback ready',
         message:
           result?.whatsapp === 'sent'
-            ? `Booking confirmation was sent automatically to ${whatsapp}.`
-            : `Booking confirmation is ready for ${whatsapp}. Use the success page button if auto-send is not configured.`
+            ? `${ROOMS[selectedRoomIndex].name} (x${roomsCount}) confirmed! WhatsApp sent to ${whatsapp}.`
+            : `Booking confirmation is ready for ${whatsapp}.`
       },
       {
         id: `nt-ml-${Date.now() + 1}`,
@@ -290,7 +290,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
         title: result?.email === 'sent' ? 'Email receipt sent' : 'Email fallback ready',
         message:
           result?.email === 'sent'
-            ? `Receipt email was sent automatically to ${email}.`
+            ? `${ROOMS[selectedRoomIndex].name} (x${roomsCount}) confirmed! Email sent to ${email}.`
             : `Receipt email is ready for ${email} with booking reference ${id}.`
       }
     ];
