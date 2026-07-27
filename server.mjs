@@ -6,12 +6,31 @@ import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
+import fs from 'fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = Number(process.env.PORT || 3002);
+
+const BOOKINGS_FILE = path.join(__dirname, 'bookings.json');
+
+async function getBookings() {
+  try {
+    const data = await fs.readFile(BOOKINGS_FILE, 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function saveBookings(bookings) {
+  await fs.writeFile(BOOKINGS_FILE, JSON.stringify(bookings, null, 2), 'utf-8');
+}
 
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
@@ -110,12 +129,17 @@ app.post('/api/booking-notifications', async (req, res) => {
   const guestPhone = normalizePhone(booking.whatsapp);
   const resortPhone = normalizePhone(process.env.RESORT_WHATSAPP || '919387528621');
   const subject = `${booking.resortName || 'Resort'} booking confirmed - ${booking.id}`;
-  const resortMessage = `New paid booking received:\n${message}`;
+  
+  // Custom message for guest as requested
+  const customMessage = `Hi this is your check in: ${booking.checkIn} and check out time: ${booking.checkOut}, type: ${booking.roomName} and number of rooms you book: ${booking.roomsCount || 1}.`;
+  const finalMessage = message || customMessage;
+  
+  const resortMessage = `New paid booking received:\n${finalMessage}`;
 
   const [whatsapp, resortWhatsapp, email] = await Promise.all([
-    sendWhatsappText({ to: guestPhone, message }),
+    sendWhatsappText({ to: guestPhone, message: finalMessage }),
     sendWhatsappText({ to: resortPhone, message: resortMessage }),
-    sendEmail({ to: booking.email, guestName: booking.guestName, subject, message })
+    sendEmail({ to: booking.email, guestName: booking.guestName, subject, message: finalMessage })
   ]);
 
   const sentCount = [whatsapp, resortWhatsapp, email].filter((status) => status === 'sent').length;
@@ -135,6 +159,71 @@ app.post('/api/booking-notifications', async (req, res) => {
     email,
     message: statusMessage
   });
+});
+
+app.get('/api/bookings', async (req, res) => {
+  try {
+    const bookings = await getBookings();
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch bookings.' });
+  }
+});
+
+app.post('/api/book', async (req, res) => {
+  try {
+    const booking = req.body;
+    if (!booking.id || !booking.roomName || !booking.checkIn || !booking.checkOut) {
+      return res.status(400).json({ message: 'Invalid booking data.' });
+    }
+    const bookings = await getBookings();
+    bookings.unshift(booking);
+    await saveBookings(bookings);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to save booking.' });
+  }
+});
+
+app.get('/api/daily-report', async (req, res) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const bookings = await getBookings();
+    
+    let totalRoomsBookedToday = 0;
+    let totalIncomeToday = 0;
+    let totalGuestsToday = 0; // Estimated 2 per room
+    
+    // Count bookings created today
+    const todaysBookings = bookings.filter(b => b.timestamp && b.timestamp.startsWith(today));
+    
+    for (const b of todaysBookings) {
+      const rooms = Number(b.roomsCount) || 1;
+      totalRoomsBookedToday += rooms;
+      totalIncomeToday += (Number(b.amount) || 0);
+      totalGuestsToday += rooms * 2; 
+    }
+    
+    // Total rooms occupied today (where today is between check-in and check-out)
+    const occupiedBookings = bookings.filter(b => {
+      return today >= b.checkIn && today < b.checkOut;
+    });
+    
+    let occupiedRooms = 0;
+    for (const b of occupiedBookings) {
+      occupiedRooms += (Number(b.roomsCount) || 1);
+    }
+    
+    res.json({
+      date: today,
+      newBookingsMadeToday: totalRoomsBookedToday,
+      totalIncomeToday: totalIncomeToday,
+      estimatedGuestsArrivingOrStayingToday: occupiedRooms * 2,
+      occupiedRoomsToday: occupiedRooms
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to generate report.' });
+  }
 });
 
 import Razorpay from 'razorpay';

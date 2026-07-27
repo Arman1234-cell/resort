@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vesper | Where the evening slows down</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300;400;500;600&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --deep-teal: #16292D;
+      --dark-teal: #1F3A3F;
+      --warm-cream: #F4F1EA;
+      --amber: #F5A623;
+      --misty-blue: #A8BDC3;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Hanken Grotesk', sans-serif;
+      background-color: var(--warm-cream);
+      color: var(--deep-teal);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Darker Grotesque', sans-serif;
+      font-weight: 300;
+      line-height: 1.1;
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .amber-dot {
+      width: 6px;
+      height: 6px;
+      background-color: var(--amber);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      transition: all 0.3s ease;
+      color: white;
+    }
+
+    nav.scrolled {
+      background-color: rgba(22, 41, 45, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 1rem 3rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      font-family: 'Darker Grotesque', sans-serif;
+      font-size: 2rem;
+      font-weight: 500;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: inherit;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.7;
+    }
+
+    .btn {
+      background-color: var(--warm-cream);
+      color: var(--deep-teal);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-family: inherit;
+      font-weight: 500;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background-color: white;
+      transform: translateY(-1px);
+    }
+
+    /* Hero Section */
+    .hero {
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      padding: 5rem 3rem;
+      color: white;
+    }
+
+    .video-container {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -2;
+      background-color: var(--deep-teal);
+    }
+
+    .video-container video {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover;
+      transition: opacity 1.2s ease-in-out;
+      opacity: 0;
+    }
+
+    .video-container video.active {
+      opacity: 1;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, rgba(22,41,45,0.3) 0%, rgba(22,41,45,0.8) 100%);
+      z-index: -1;
+    }
+
+    .giant-wordmark {
+      position: absolute;
+      top: 45%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Darker Grotesque', sans-serif;
+      font-size: 28vw;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.12);
+      z-index: -1;
+      pointer-events: none;
+      white-space: nowrap;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .hero-text {
+      max-width: 600px;
+    }
+
+    .hero-text h1 {
+      font-size: 5rem;
+      margin-bottom: 1.5rem;
+      line-height: 1;
+    }
+
+    .hero-text .stats {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .stars-icon {
+      color: var(--amber);
+      letter-spacing: 2px;
+    }
+
+    /* Glassmorphism Card */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 2.5rem;
+      width: 420px;
+      color: white;
+    }
+
+    .glass-card h3 {
+      font-size: 2.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .input-group {
+      flex: 1;
+      margin-bottom: 1rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
+
+    .input-group input, .input-group select {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 1rem;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus, .input-group select:focus {
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .input-group input::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity: 0.7;
+      cursor: pointer;
+    }
+
+    .glass-card .btn {
+      width: 100%;
+      margin-top: 1rem;
+      background-color: var(--warm-cream);
+      color: var(--deep-teal);
+      padding: 1.2rem;
+      font-size: 1.1rem;
+      border-radius: 12px;
+    }
+
+    .glass-card .btn:hover {
+      background-color: white;
+    }
+
+    /* Sections Shared */
+    section {
+      padding: 8rem 3rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    /* Host Note */
+    .host-note {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .host-note h2 {
+      font-size: 3.8rem;
+      margin: 2rem 0;
+      color: var(--deep-teal);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin-top: 5rem;
+      border-top: 1px solid rgba(22, 41, 45, 0.1);
+      padding-top: 4rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'Darker Grotesque', sans-serif;
+      font-size: 3rem;
+      color: var(--amber);
+      margin-bottom: 0.5rem;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    /* Spaces Grid */
+    .spaces-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .space-card {
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      height: 600px;
+    }
+
+    .space-card.large {
+      grid-column: span 2;
+      height: 700px;
+    }
+
+    .space-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s ease;
+    }
+
+    .space-card:hover img {
+      transform: scale(1.03);
+    }
+
+    .space-info {
+      position: absolute;
+      bottom: 0; left: 0; width: 100%;
+      padding: 4rem 3rem 3rem;
+      background: linear-gradient(to top, rgba(22,41,45,0.9), transparent);
+      color: white;
+    }
+
+    .space-info h3 {
+      font-size: 3rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Amenities */
+    .amenities-section {
+      background-color: var(--dark-teal);
+      color: var(--warm-cream);
+      max-width: 100%;
+    }
+
+    .amenities-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .amenities-container h2 {
+      font-size: 4rem;
+      margin: 1.5rem 0 3rem;
+    }
+
+    .amenities-images {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .amenities-images img {
+      width: 100%;
+      border-radius: 20px;
+      object-fit: cover;
+      height: 350px;
+    }
+
+    .amenities-images img:first-child {
+      grid-column: span 2;
+      height: 450px;
+    }
+
+    .checklist {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .checklist li::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: var(--amber);
+      border-radius: 50%;
+    }
+
+    /* Gallery */
+    .gallery-masonry {
+      column-count: 3;
+      column-gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 1.5rem;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      display: block;
+      border-radius: 20px;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.02);
+    }
+
+    /* Reviews */
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .review-card {
+      background-color: white;
+      padding: 3rem 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(22, 41, 45, 0.03);
+    }
+
+    .review-card .stars {
+      color: var(--amber);
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .review-text {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      color: var(--deep-teal);
+    }
+
+    .review-author {
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      opacity: 0.6;
+    }
+
+    /* Rates & Availability */
+    .rates-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      background-color: var(--misty-blue);
+      padding: 6rem;
+      border-radius: 40px;
+      align-items: center;
+    }
+
+    .rates-info h2 {
+      font-size: 4.5rem;
+      margin: 1rem 0 2rem;
+      color: var(--deep-teal);
+    }
+
+    .rate-price {
+      font-family: 'Darker Grotesque', sans-serif;
+      font-size: 5rem;
+      line-height: 1;
+      margin-bottom: 1rem;
+      color: var(--deep-teal);
+    }
+
+    .rate-price span {
+      font-size: 1.5rem;
+      opacity: 0.7;
+      font-family: 'Hanken Grotesk', sans-serif;
+    }
+
+    .rates-info p {
+      font-size: 1.1rem;
+      opacity: 0.8;
+      max-width: 400px;
+    }
+
+    .booking-panel {
+      background: white;
+      padding: 3rem;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(22, 41, 45, 0.08);
+    }
+
+    .booking-panel .input-group input, 
+    .booking-panel .input-group select {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      color: var(--deep-teal);
+    }
+    
+    .booking-panel .input-group input:focus, 
+    .booking-panel .input-group select:focus {
+      border-color: var(--amber);
+    }
+
+    .booking-panel .input-group input::-webkit-calendar-picker-indicator {
+      filter: none;
+      opacity: 0.5;
+    }
+
+    .booking-panel .btn {
+      width: 100%;
+      background-color: var(--deep-teal);
+      color: white;
+      padding: 1.2rem;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      border-radius: 12px;
+    }
+
+    .booking-panel .btn:hover {
+      background-color: var(--dark-teal);
+    }
+
+    #booking-result {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 12px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    #booking-result.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Host Section */
+    .host-section {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 10rem 3rem;
+    }
+
+    .host-img {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 2.5rem;
+    }
+    
+    .host-section h2 {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .host-links {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+
+    .host-links a {
+      color: var(--deep-teal);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid var(--amber);
+      padding-bottom: 4px;
+      transition: color 0.2s;
+    }
+
+    .host-links a:hover {
+      color: var(--amber);
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      height: 80vh;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      color: white;
+      overflow: hidden;
+    }
+
+    .footer-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 4rem;
+      width: 100%;
+    }
+
+    .footer-wordmark {
+      font-family: 'Darker Grotesque', sans-serif;
+      font-size: 20vw;
+      line-height: 0.75;
+      margin-bottom: 3rem;
+      letter-spacing: -0.02em;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      opacity: 0.8;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .footer-links a {
+      color: white;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .footer-links a:hover {
+      opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-content, .amenities-container, .rates-container {
+        flex-direction: column;
+        grid-template-columns: 1fr;
+      }
+      nav .nav-links {
+        display: none;
+      }
+      .giant-wordmark {
+        font-size: 35vw;
+      }
+      .hero-content {
+        align-items: center;
+        text-align: center;
+        gap: 4rem;
+      }
+      .glass-card {
+        width: 100%;
+        max-width: 500px;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+      }
+      .spaces-grid {
+        grid-template-columns: 1fr;
+      }
+      .space-card.large {
+        grid-column: span 1;
+        height: 500px;
+      }
+      .gallery-masonry {
+        column-count: 2;
+      }
+      .reviews-grid {
+        grid-template-columns: 1fr;
+      }
+      .rates-container {
+        padding: 4rem;
+      }
+      footer {
+        height: 60vh;
+      }
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        padding: 1rem 1.5rem;
+      }
+      .hero {
+        padding: 6rem 1.5rem 3rem;
+      }
+      .hero-text h1 {
+        font-size: 3.5rem;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .gallery-masonry {
+        column-count: 1;
+      }
+      .amenities-container {
+        gap: 4rem;
+      }
+      .checklist {
+        grid-template-columns: 1fr;
+      }
+      section {
+        padding: 5rem 1.5rem;
+      }
+      .rates-container {
+        padding: 2.5rem 1.5rem;
+        border-radius: 24px;
+      }
+      .rates-info h2 {
+        font-size: 3.5rem;
+      }
+      .rate-price {
+        font-size: 4rem;
+      }
+      .booking-panel {
+        padding: 2rem 1.5rem;
+      }
+      .host-links {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav id="navbar">
+    <a href="#" class="logo">Vesper</a>
+    <div class="nav-links">
+      <a href="#spaces">The Spaces</a>
+      <a href="#amenities">Amenities</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#host">The Host</a>
+      <a href="#rates" class="btn">Check availability</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="video-container">
+      <video id="hero-v1" autoplay muted playsinline class="active">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4" type="video/mp4">
+      </video>
+      <video id="hero-v2" muted playsinline>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="giant-wordmark">Vesper</div>
+    
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>Where the evening slows down.</h1>
+        <div class="stats">
+          <span class="stars-icon">★★★★★</span>
+          <span>4.9 · 214 quiet stays on the lake</span>
+        </div>
+      </div>
+      
+      <div class="glass-card">
+        <div class="eyebrow"><span class="amber-dot"></span> Reserve the quiet</div>
+        <h3>Inspired by nature</h3>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Check in</label>
+            <input type="date" id="hero-checkin">
+          </div>
+          <div class="input-group">
+            <label>Check out</label>
+            <input type="date" id="hero-checkout">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Guests</label>
+          <select id="hero-guests">
+            <option>1 guest</option>
+            <option selected>2 guests</option>
+            <option>3 guests</option>
+            <option>4 guests</option>
+            <option>5 guests</option>
+            <option>6 guests</option>
+          </select>
+        </div>
+        <a href="#rates" class="btn text-center">Check availability →</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Host Note Section -->
+  <section class="text-center" id="about">
+    <div class="host-note">
+      <div class="eyebrow" style="justify-content: center;"><span class="amber-dot"></span> Host Note</div>
+      <h2>Vesper is the name for the evening star, a reminder to pause as the day fades. We built this cabin to hold the quiet.</h2>
+      
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value">6</div>
+          <div class="stat-label">Sleeps comfortably</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">180</div>
+          <div class="stat-label">Ft of private shoreline</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">40</div>
+          <div class="stat-label">Min from the foothills</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Private & secluded</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Spaces -->
+  <section id="spaces">
+    <div class="eyebrow"><span class="amber-dot"></span> The Spaces</div>
+    <div class="spaces-grid">
+      <div class="space-card large">
+        <img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?q=80&w=1920&auto=format&fit=crop" alt="Great Room" loading="lazy">
+        <div class="space-info">
+          <div class="eyebrow">01</div>
+          <h3>The Great Room</h3>
+        </div>
+      </div>
+      <div class="space-card">
+        <img src="https://images.unsplash.com/photo-1556910103-1c02745a8720?q=80&w=1920&auto=format&fit=crop" alt="Kitchen" loading="lazy">
+        <div class="space-info">
+          <div class="eyebrow">02</div>
+          <h3>Matte Kitchen</h3>
+        </div>
+      </div>
+      <div class="space-card">
+        <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=1920&auto=format&fit=crop" alt="Primary Suite" loading="lazy">
+        <div class="space-info">
+          <div class="eyebrow">03</div>
+          <h3>Primary Suite</h3>
+        </div>
+      </div>
+      <div class="space-card">
+        <img src="https://images.unsplash.com/photo-1507652313519-d4e9174996cb?q=80&w=1920&auto=format&fit=crop" alt="Soaking Bath" loading="lazy">
+        <div class="space-info">
+          <div class="eyebrow">04</div>
+          <h3>Soaking Bath</h3>
+        </div>
+      </div>
+      <div class="space-card">
+        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?q=80&w=1920&auto=format&fit=crop" alt="Reading Nook" loading="lazy">
+        <div class="space-info">
+          <div class="eyebrow">05</div>
+          <h3>Reading Nook</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Amenities -->
+  <div class="amenities-section" id="amenities">
+    <section>
+      <div class="amenities-container">
+        <div>
+          <div class="eyebrow"><span class="amber-dot"></span> Amenities</div>
+          <h2>Everything you need. Nothing you don't.</h2>
+          <p style="opacity: 0.9; font-size: 1.1rem; margin-bottom: 2rem;">Designed to let you disconnect without compromising on comfort. The cabin is fully stocked for deep relaxation.</p>
+          
+          <ul class="checklist">
+            <li>Cedar Hot Tub</li>
+            <li>Wood-burning Sauna</li>
+            <li>Lakeside Fire Pit</li>
+            <li>Private Dock</li>
+            <li>Canoe & Lifevests</li>
+            <li>High-speed Starlink</li>
+            <li>Aesop Bath Products</li>
+            <li>Locally Roasted Coffee</li>
+          </ul>
+        </div>
+        
+        <div class="amenities-images">
+          <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1920&auto=format&fit=crop" alt="Hot tub and Sauna" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1506869640319-a1a560602af0?q=80&w=1920&auto=format&fit=crop" alt="Fire Pit" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1499572450375-b6d31e9c5208?q=80&w=1920&auto=format&fit=crop" alt="Dock and Canoe" loading="lazy">
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Gallery -->
+  <section id="gallery">
+    <div class="eyebrow"><span class="amber-dot"></span> Gallery</div>
+    <div class="gallery-masonry">
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1449198063792-7d754d6f3c80?q=80&w=800&auto=format&fit=crop" alt="Exterior Day" loading="lazy"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?q=80&w=800&auto=format&fit=crop" alt="Interior Details" loading="lazy"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1499572450375-b6d31e9c5208?q=80&w=800&auto=format&fit=crop" alt="Lake" loading="lazy"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?q=80&w=800&auto=format&fit=crop" alt="Nook" loading="lazy"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1556910103-1c02745a8720?q=80&w=800&auto=format&fit=crop" alt="Kitchen details" loading="lazy"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1506869640319-a1a560602af0?q=80&w=800&auto=format&fit=crop" alt="Fire pit sunset" loading="lazy"></div>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <section id="reviews" style="background-color: #fcfbfa;">
+    <div class="text-center">
+      <div class="eyebrow" style="justify-content: center;"><span class="amber-dot"></span> Guest Book</div>
+      <h2 style="font-size: 3.5rem; margin-top: 1rem;">4.9 stars from 214 stays</h2>
+    </div>
+    
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"The most peaceful weekend we've had in years. The attention to detail in the cabin is incredible, and waking up to the mist on the lake is something we'll never forget."</p>
+        <div class="review-author">Sarah M. · October</div>
+      </div>
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Everything is exactly as pictured, if not better. The soaking tub and the cedar sauna made it feel like a private spa retreat in the middle of the wilderness."</p>
+        <div class="review-author">James & Elena · December</div>
+      </div>
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Mara and Del have thought of everything. We barely left the property. Reading by the fire while the rain fell outside was pure magic. We will absolutely be back."</p>
+        <div class="review-author">David K. · February</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rates & Availability -->
+  <section id="rates">
+    <div class="rates-container">
+      <div class="rates-info">
+        <div class="eyebrow"><span class="amber-dot"></span> Rates & Availability</div>
+        <h2>Book your stay</h2>
+        <div class="rate-price">$540 <span>/ night</span></div>
+        <p>Two night minimum stay. One booking at a time. Total privacy guaranteed.</p>
+      </div>
+      
+      <div class="booking-panel">
+        <div class="input-row">
+          <div class="input-group">
+            <label>Check in</label>
+            <input type="date" id="checkin">
+          </div>
+          <div class="input-group">
+            <label>Check out</label>
+            <input type="date" id="checkout">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Guests</label>
+          <select id="guests">
+            <option>1 guest</option>
+            <option selected>2 guests</option>
+            <option>3 guests</option>
+            <option>4 guests</option>
+            <option>5 guests</option>
+            <option>6 guests (Max)</option>
+          </select>
+        </div>
+        
+        <div id="booking-result"></div>
+        
+        <button class="btn">Request to book</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Host Section -->
+  <section class="host-section" id="host">
+    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=400&auto=format&fit=crop" alt="Mara and Del" class="host-img" loading="lazy">
+    <div class="eyebrow" style="justify-content: center;"><span class="amber-dot"></span> Meet the Hosts</div>
+    <h2>Mara & Del</h2>
+    <p style="font-size: 1.1rem; opacity: 0.9;">We live 20 minutes down the mountain and are always available if you need anything, but otherwise, we leave you entirely to the quiet.</p>
+    
+    <div class="host-links">
+      <a href="mailto:hello@vespercabin.com">hello@vespercabin.com</a>
+      <a href="tel:+15550192834">+1 (555) 019-2834</a>
+      <a href="#">Washington Cascades</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="video-container">
+      <video id="footer-v1" autoplay muted playsinline class="active">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4" type="video/mp4">
+      </video>
+      <video id="footer-v2" muted playsinline>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-overlay" style="background: linear-gradient(to top, rgba(22,41,45,0.9) 0%, rgba(22,41,45,0.2) 100%);"></div>
+    
+    <div class="footer-content">
+      <div class="footer-wordmark">Vesper</div>
+      <div class="footer-links">
+        <a href="#">Instagram</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Privacy Policy</a>
+        <span>© 2024 Vesper</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      // Navbar scroll effect
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
+
+      // Video Loop Crossfade logic
+      function setupVideoLoop(vid1, vid2) {
+        if (!vid1 || !vid2) return;
+        const CROSSFADE = 1.2;
+        let active = 1;
+        
+        vid1.addEventListener('timeupdate', () => {
+          if (active === 1 && vid1.duration > 0 && (vid1.duration - vid1.currentTime <= CROSSFADE)) {
+            vid2.play();
+            vid2.style.opacity = 1;
+            vid1.style.opacity = 0;
+            active = 2;
+            setTimeout(() => { vid1.pause(); vid1.currentTime = 0; }, CROSSFADE * 1000);
+          }
+        });
+
+        vid2.addEventListener('timeupdate', () => {
+          if (active === 2 && vid2.duration > 0 && (vid2.duration - vid2.currentTime <= CROSSFADE)) {
+            vid1.play();
+            vid1.style.opacity = 1;
+            vid2.style.opacity = 0;
+            active = 1;
+            setTimeout(() => { vid2.pause(); vid2.currentTime = 0; }, CROSSFADE * 1000);
+          }
+        });
+      }
+
+      setupVideoLoop(document.getElementById('hero-v1'), document.getElementById('hero-v2'));
+      setupVideoLoop(document.getElementById('footer-v1'), document.getElementById('footer-v2'));
+
+      // Booking Calculation
+      const checkin = document.getElementById('checkin');
+      const checkout = document.getElementById('checkout');
+      const result = document.getElementById('booking-result');
+      
+      const RATE = 540;
+      const CLEANING_FEE = 150;
+
+      function updateBooking() {
+        if (!checkin.value || !checkout.value) {
+          result.classList.remove('active');
+          return;
+        }
+
+        const d1 = new Date(checkin.value);
+        const d2 = new Date(checkout.value);
+        
+        // Ensure checkout is after checkin
+        if (d2 <= d1) {
+          result.innerHTML = '<span style="color: #d32f2f; font-weight: 500;">Check-out must be after check-in.</span>';
+          result.classList.add('active');
+          return;
+        }
+
+        const diffTime = d2 - d1;
+        const nights = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+        result.classList.add('active');
+
+        if (nights < 2) {
+          result.innerHTML = '<span style="color: #d32f2f; font-weight: 500;">A minimum stay of 2 nights is required.</span>';
+          return;
+        }
+
+        const baseTotal = nights * RATE;
+        const grandTotal = baseTotal + CLEANING_FEE;
+
+        result.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom: 12px; font-size: 1.05rem;">
+            <span>$${RATE} × ${nights} nights</span>
+            <span>$${baseTotal.toLocaleString()}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e9ecef; font-size: 1.05rem;">
+            <span>Cleaning fee</span>
+            <span>$${CLEANING_FEE}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-weight: 600; font-size: 1.25rem; color: var(--deep-teal);">
+            <span>Total</span>
+            <span>$${grandTotal.toLocaleString()}</span>
+          </div>
+        `;
+      }
+
+      checkin.addEventListener('change', updateBooking);
+      checkout.addEventListener('change', updateBooking);
+
+      // Sync hero dates to bottom booking panel
+      const heroCheckin = document.getElementById('hero-checkin');
+      const heroCheckout = document.getElementById('hero-checkout');
+      const heroGuests = document.getElementById('hero-guests');
+      const guests = document.getElementById('guests');
+
+      heroCheckin.addEventListener('change', (e) => {
+        checkin.value = e.target.value;
+        updateBooking();
+      });
+      
+      heroCheckout.addEventListener('change', (e) => {
+        checkout.value = e.target.value;
+        updateBooking();
+      });
+
+      heroGuests.addEventListener('change', (e) => {
+        guests.value = e.target.value;
+      });
+
+    });
+  </script>
+</body>
+</html>

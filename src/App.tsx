@@ -10,6 +10,11 @@ import BookingModal from './components/BookingModal';
 import AdminDashboard from './components/AdminDashboard';
 import { SectionLink } from './types';
 import { useAuth } from './context/AuthContext';
+import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
   const [currentSection, setCurrentSection] = useState<string>('hero-1');
@@ -23,6 +28,26 @@ export default function App() {
       setIsAdminOpen(true);
     }
   }, [user]);
+
+  // Global Lenis Setup
+  useEffect(() => {
+    const lenis = new Lenis();
+
+    lenis.on('scroll', ScrollTrigger.update);
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      gsap.ticker.remove((time) => {
+        lenis.raf(time * 1000);
+      });
+      lenis.destroy();
+    };
+  }, []);
 
   // Define section navigation lists
   const sections: SectionLink[] = [

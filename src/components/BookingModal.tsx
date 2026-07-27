@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Check, CheckCircle, Copy, Mail, MessageSquare, QrCode, ShieldCheck, Smartphone, X } from 'lucide-react';
+import CustomCalendar from './CustomCalendar';
 
 interface RazorpaySuccessResponse {
   razorpay_payment_id: string;
@@ -115,6 +116,52 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   const [checkIn, setCheckIn] = useState(getFutureDate(1));
   const [checkOut, setCheckOut] = useState(getFutureDate(3));
   const [selectedRoomIndex, setSelectedRoomIndex] = useState(0);
+  const [roomsCount, setRoomsCount] = useState(1);
+  const [allBookings, setAllBookings] = useState<any[]>([]);
+  const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch('/api/bookings')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setAllBookings(data);
+        }
+      })
+      .catch(err => console.error('Failed to fetch bookings', err));
+  }, []);
+
+  // Compute unavailable dates based on selected room and quantity
+  useEffect(() => {
+    const roomName = ROOMS[selectedRoomIndex].name;
+    const dateCounts: Record<string, number> = {};
+    
+    allBookings.forEach(b => {
+      if (b.roomName === roomName && b.status === 'Paid') {
+        const count = Number(b.roomsCount) || 1;
+        // Mark all dates from checkIn to checkOut as occupied
+        let d = new Date(b.checkIn);
+        const end = new Date(b.checkOut);
+        while (d < end) { // exclude checkout day
+          const s = d.toISOString().split('T')[0];
+          dateCounts[s] = (dateCounts[s] || 0) + count;
+          d.setDate(d.getDate() + 1);
+        }
+      }
+    });
+
+    const unavailable: string[] = [];
+    // Max 2 rooms of each type
+    const MAX_ROOMS_OF_TYPE = 2;
+    for (const [date, count] of Object.entries(dateCounts)) {
+      if (count + roomsCount > MAX_ROOMS_OF_TYPE) {
+        unavailable.push(date);
+      }
+    }
+    setUnavailableDates(unavailable);
+    
+    // If current checkIn or checkOut falls in unavailable, we might want to warn, but let the calendar handle blocking it next time.
+  }, [allBookings, selectedRoomIndex, roomsCount]);
 
   useEffect(() => {
     if (isOpen) {
@@ -137,14 +184,14 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   const d2 = new Date(checkOut);
   const nights = Math.max(1, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
   const roomPrice = ROOMS[selectedRoomIndex].price;
-  const subtotal = roomPrice * nights;
+  const subtotal = roomPrice * nights * roomsCount;
   const gst = Math.round(subtotal * 0.12);
   const total = subtotal + gst;
 
   const bookingMessage = useMemo(() => {
     const id = bookingId || 'Pending';
     return buildBookingMessage(id, paymentTxId || 'Not available');
-  }, [bookingId, name, selectedRoomIndex, checkIn, checkOut, nights, total, paymentTxId]);
+  }, [bookingId, name, selectedRoomIndex, checkIn, checkOut, nights, roomsCount, total, paymentTxId]);
 
 
   const customerWhatsappUrl = `https://wa.me/${normalizeIndianPhone(whatsapp)}?text=${encodeURIComponent(bookingMessage)}`;
@@ -154,7 +201,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   if (!isOpen) return null;
 
   function buildBookingMessage(id: string, txId: string) {
-    return `Hello ${name}, your booking ${id} at ${RESORT_NAME} is confirmed.\nRoom: ${ROOMS[selectedRoomIndex].name}\nDates: ${checkIn} to ${checkOut} (${nights} ${nights === 1 ? 'night' : 'nights'})\nAmount paid: ${formatInr(total)}\nPayment reference: ${txId}\nThank you for booking with us.`;
+    return `Hi this is your check in: ${checkIn} and check out time: ${checkOut}, type: ${ROOMS[selectedRoomIndex].name} and number of rooms you book: ${roomsCount}.\nAmount paid: ${formatInr(total)}\nPayment reference: ${txId}`;
   }
 
   const handleNextToPayment = (e: React.FormEvent) => {
@@ -173,7 +220,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     setStep('payment');
   };
 
-  const saveConfirmedBooking = (
+  const saveConfirmedBooking = async (
     id: string,
     transactionId: string,
     gateway: string,
@@ -184,14 +231,13 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     setPaymentGateway(gateway);
     setStep('success');
 
-    const existingBookingsStr = localStorage.getItem('greencoast_bookings') || '[]';
-    const existingBookings = JSON.parse(existingBookingsStr);
     const newBooking = {
       id,
       name,
       email,
       whatsapp,
       roomName: ROOMS[selectedRoomIndex].name,
+      roomsCount,
       checkIn,
       checkOut,
       nights,
@@ -204,8 +250,25 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
       timestamp: new Date().toISOString()
     };
 
+    // Save to localStorage as fallback
+    const existingBookingsStr = localStorage.getItem('greencoast_bookings') || '[]';
+    const existingBookings = JSON.parse(existingBookingsStr);
     existingBookings.unshift(newBooking);
     localStorage.setItem('greencoast_bookings', JSON.stringify(existingBookings));
+
+    // Save to server
+    try {
+      await fetch('/api/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newBooking)
+      });
+      // Refresh local state bookings
+      setAllBookings(prev => [newBooking, ...prev]);
+    } catch (error) {
+      console.error('Failed to save booking to server:', error);
+    }
+
     void sendAutomaticBookingNotification(id, transactionId);
   };
 
@@ -257,6 +320,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
             email,
             whatsapp: normalizeIndianPhone(whatsapp),
             roomName: ROOMS[selectedRoomIndex].name,
+            roomsCount,
             checkIn,
             checkOut,
             nights,
@@ -470,49 +534,51 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
 
           {step === 'form' && (
             <form onSubmit={handleNextToPayment} className="p-6 overflow-y-auto space-y-5 flex-grow">
-              <div>
-                <label className="block font-mono text-[9px] text-neutral-500 uppercase tracking-widest mb-1.5">
-                  Select Room or Suite
-                </label>
-                <select
-                  value={selectedRoomIndex}
-                  onChange={(e) => setSelectedRoomIndex(parseInt(e.target.value))}
-                  className="w-full bg-neutral-900 border border-neutral-850 p-2.5 rounded-xs text-xs font-sans focus:border-neutral-500 text-neutral-100 outline-hidden"
-                >
-                  {ROOMS.map((room, i) => (
-                    <option key={i} value={i}>
-                      {room.name} - {formatInr(room.price)}/night
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block font-mono text-[9px] text-neutral-500 uppercase tracking-widest mb-1.5">
-                    Check-in Date
+                    Select Room or Suite
                   </label>
-                  <input
-                    type="date"
-                    required
-                    min={new Date().toISOString().split('T')[0]}
-                    value={checkIn}
-                    onChange={(e) => setCheckIn(e.target.value)}
-                    className="w-full bg-neutral-900 border border-neutral-850 p-2.5 rounded-xs text-xs font-mono text-neutral-100 outline-hidden focus:border-neutral-500"
-                  />
+                  <select
+                    value={selectedRoomIndex}
+                    onChange={(e) => setSelectedRoomIndex(parseInt(e.target.value))}
+                    className="w-full bg-neutral-900 border border-neutral-850 p-2.5 rounded-xs text-xs font-sans focus:border-neutral-500 text-neutral-100 outline-hidden"
+                  >
+                    {ROOMS.map((room, i) => (
+                      <option key={i} value={i}>
+                        {room.name} - {formatInr(room.price)}/night
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block font-mono text-[9px] text-neutral-500 uppercase tracking-widest mb-1.5">
-                    Check-out Date
+                    Number of Rooms
                   </label>
-                  <input
-                    type="date"
-                    required
-                    min={checkIn}
-                    value={checkOut}
-                    onChange={(e) => setCheckOut(e.target.value)}
-                    className="w-full bg-neutral-900 border border-neutral-850 p-2.5 rounded-xs text-xs font-mono text-neutral-100 outline-hidden focus:border-neutral-500"
-                  />
+                  <select
+                    value={roomsCount}
+                    onChange={(e) => setRoomsCount(parseInt(e.target.value))}
+                    className="w-full bg-neutral-900 border border-neutral-850 p-2.5 rounded-xs text-xs font-sans focus:border-neutral-500 text-neutral-100 outline-hidden"
+                  >
+                    <option value={1}>1 Room</option>
+                    <option value={2}>2 Rooms</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-mono text-[9px] text-neutral-500 uppercase tracking-widest mb-1.5">
+                  Select Dates (Check-In & Check-Out)
+                </label>
+                <CustomCalendar 
+                  checkIn={checkIn}
+                  checkOut={checkOut}
+                  onChange={(inDate, outDate) => { setCheckIn(inDate); setCheckOut(outDate); }}
+                  unavailableDates={unavailableDates}
+                />
+                <div className="mt-2 text-xs text-neutral-400 font-sans flex justify-between px-1">
+                  <span>In: <span className="text-white font-medium">{checkIn}</span></span>
+                  <span>Out: <span className="text-white font-medium">{checkOut}</span></span>
                 </div>
               </div>
 
@@ -553,7 +619,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
               <div className="p-4 bg-neutral-950 border border-neutral-900/80 rounded-xs space-y-2 mt-4">
                 <div className="flex justify-between text-xs text-neutral-400 gap-4">
                   <span>
-                    {ROOMS[selectedRoomIndex].name} ({nights} {nights === 1 ? 'night' : 'nights'})
+                    {ROOMS[selectedRoomIndex].name} x {roomsCount} ({nights} {nights === 1 ? 'night' : 'nights'})
                   </span>
                   <span>{formatInr(subtotal)}</span>
                 </div>
@@ -698,7 +764,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                 </div>
                 <div className="flex justify-between gap-4">
                   <span className="text-neutral-500">Room Confirmed</span>
-                  <span className="text-neutral-200 text-right">{ROOMS[selectedRoomIndex].name}</span>
+                  <span className="text-neutral-200 text-right">{ROOMS[selectedRoomIndex].name} (x{roomsCount})</span>
                 </div>
                 <div className="flex justify-between gap-4">
                   <span className="text-neutral-500">Duration</span>

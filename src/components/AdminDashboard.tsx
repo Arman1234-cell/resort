@@ -11,7 +11,6 @@ import {
   Trash2,
   TrendingUp,
   Users,
-  Users,
   X
 } from 'lucide-react';
 import { ROOMS } from './BookingModal';
