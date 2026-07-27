@@ -86,7 +86,7 @@ const sendWhatsappText = async ({ to, message }) => {
   return 'sent';
 };
 
-const sendEmail = async ({ to, guestName, subject, message }) => {
+const sendEmail = async ({ to, guestName, subject, message, htmlContent }) => {
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.MAIL_FROM_EMAIL;
   const senderName = process.env.MAIL_FROM_NAME || 'Green Coast Resort';
@@ -106,7 +106,8 @@ const sendEmail = async ({ to, guestName, subject, message }) => {
       sender: { name: senderName, email: senderEmail },
       to: [{ email: to, name: guestName }],
       subject,
-      textContent: message
+      textContent: message,
+      ...(htmlContent && { htmlContent })
     })
   });
 
@@ -136,10 +137,28 @@ app.post('/api/booking-notifications', async (req, res) => {
   
   const resortMessage = `New paid booking received:\n${finalMessage}`;
 
+  const htmlEmail = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px;">
+      <h2 style="color: #111;">Booking Confirmed</h2>
+      <p style="color: #444; font-size: 16px;">Hi ${booking.guestName || 'Guest'},</p>
+      <p style="color: #444; font-size: 16px;">Thank you for booking with <strong>${booking.resortName || 'Green Coast Resort'}</strong>. Your payment was successful.</p>
+      <div style="background-color: #f9f9f9; padding: 15px; border-radius: 6px; margin: 20px 0; border: 1px solid #f1f1f1;">
+        <h3 style="margin-top: 0; color: #333;">Your Booking Details</h3>
+        <p style="margin: 8px 0; color: #555;"><strong>Booking Ref:</strong> ${booking.id}</p>
+        <p style="margin: 8px 0; color: #555;"><strong>Room Type:</strong> ${booking.roomName}</p>
+        <p style="margin: 8px 0; color: #555;"><strong>Rooms Booked:</strong> ${booking.roomsCount || 1}</p>
+        <p style="margin: 8px 0; color: #555;"><strong>Check-in:</strong> ${booking.checkIn}</p>
+        <p style="margin: 8px 0; color: #555;"><strong>Check-out:</strong> ${booking.checkOut}</p>
+        <p style="margin: 8px 0; color: #555;"><strong>Amount Paid:</strong> ${booking.amountText}</p>
+      </div>
+      <p style="color: #444; font-size: 14px; margin-top: 20px;">We look forward to hosting you!</p>
+    </div>
+  `;
+
   const [whatsapp, resortWhatsapp, email] = await Promise.all([
     sendWhatsappText({ to: guestPhone, message: finalMessage }),
     sendWhatsappText({ to: resortPhone, message: resortMessage }),
-    sendEmail({ to: booking.email, guestName: booking.guestName, subject, message: finalMessage })
+    sendEmail({ to: booking.email, guestName: booking.guestName, subject, message: finalMessage, htmlContent: htmlEmail })
   ]);
 
   const sentCount = [whatsapp, resortWhatsapp, email].filter((status) => status === 'sent').length;
