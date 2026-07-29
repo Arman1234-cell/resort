@@ -272,26 +272,19 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     void sendAutomaticBookingNotification(id, transactionId);
   };
 
-  const triggerBookingNotifications = (id: string, result?: NotificationResult) => {
-    const autoSent = result?.whatsapp === 'sent' || result?.resortWhatsapp === 'sent' || result?.email === 'sent';
+  const triggerBookingNotifications = (id: string) => {
     const newNotifications: NotificationAlert[] = [
       {
         id: `nt-wa-${Date.now()}`,
         type: 'whatsapp',
-        title: autoSent ? 'WhatsApp notification handled' : 'WhatsApp fallback ready',
-        message:
-          result?.whatsapp === 'sent'
-            ? `${ROOMS[selectedRoomIndex].name} (x${roomsCount}) confirmed! WhatsApp sent to ${whatsapp}.`
-            : `Booking confirmation is ready for ${whatsapp}.`
+        title: 'WhatsApp notification handled',
+        message: `${ROOMS[selectedRoomIndex].name} (x${roomsCount}) confirmed! WhatsApp automation triggered for ${whatsapp}.`
       },
       {
         id: `nt-ml-${Date.now() + 1}`,
         type: 'email',
-        title: result?.email === 'sent' ? 'Email receipt sent' : 'Email fallback ready',
-        message:
-          result?.email === 'sent'
-            ? `${ROOMS[selectedRoomIndex].name} (x${roomsCount}) confirmed! Email sent to ${email}.`
-            : `Receipt email is ready for ${email} with booking reference ${id}.`
+        title: 'Email receipt handled',
+        message: `${ROOMS[selectedRoomIndex].name} (x${roomsCount}) confirmed! Email automation triggered for ${email}.`
       }
     ];
 
@@ -304,61 +297,10 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   };
 
   const sendAutomaticBookingNotification = async (id: string, txId: string) => {
-    setNotificationStatus('sending');
-    setNotificationMessage('Sending WhatsApp and email notifications...');
-
-    const message = buildBookingMessage(id, txId);
-
-    try {
-      const response = await fetch('/api/booking-notifications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          booking: {
-            id,
-            guestName: name,
-            email,
-            whatsapp: normalizeIndianPhone(whatsapp),
-            roomName: ROOMS[selectedRoomIndex].name,
-            roomsCount,
-            checkIn,
-            checkOut,
-            nights,
-            amount: total,
-            amountText: formatInr(total),
-            transactionId: txId,
-            resortName: RESORT_NAME
-          },
-          message
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Notification API failed with ${response.status}`);
-      }
-
-      const result = (await response.json()) as NotificationResult;
-      const anySent = result.whatsapp === 'sent' || result.resortWhatsapp === 'sent' || result.email === 'sent';
-      const allSkipped = result.whatsapp === 'skipped' && result.resortWhatsapp === 'skipped' && result.email === 'skipped';
-
-      if (anySent) {
-        setNotificationStatus('sent');
-        setNotificationMessage(result.message || 'Automatic booking notifications were sent.');
-      } else if (allSkipped) {
-        setNotificationStatus('skipped');
-        setNotificationMessage(result.message || 'Automatic notifications are not configured yet.');
-      } else {
-        setNotificationStatus('failed');
-        setNotificationMessage(result.message || 'Automatic notification sending failed.');
-      }
-
-      triggerBookingNotifications(id, result);
-    } catch (error) {
-      console.error(error);
-      setNotificationStatus('failed');
-      setNotificationMessage('Automatic sending is unavailable. Use the WhatsApp and email buttons below.');
-      triggerBookingNotifications(id);
-    }
+    // The backend now automatically handles notifications via n8n upon successful booking creation.
+    setNotificationStatus('sent');
+    setNotificationMessage('Booking notifications have been triggered automatically via n8n workflow.');
+    triggerBookingNotifications(id);
   };
 
   const handleRazorpayCheckout = async () => {

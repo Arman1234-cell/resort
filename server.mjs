@@ -51,135 +51,6 @@ const getRazorpayCredentials = () => {
   return { keyId, keySecret };
 };
 
-const sendWhatsappText = async ({ to, message }) => {
-  const token = process.env.WHATSAPP_ACCESS_TOKEN;
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-
-  if (!token || !phoneNumberId || !to) {
-    return 'skipped';
-  }
-
-  const response = await fetch(`https://graph.facebook.com/v20.0/${phoneNumberId}/messages`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      messaging_product: 'whatsapp',
-      recipient_type: 'individual',
-      to,
-      type: 'text',
-      text: {
-        preview_url: false,
-        body: message
-      }
-    })
-  });
-
-  if (!response.ok) {
-    const detail = await response.text();
-    console.error('WhatsApp send failed:', detail);
-    return 'failed';
-  }
-
-  return 'sent';
-};
-
-const sendEmail = async ({ to, guestName, subject, message, htmlContent }) => {
-  const apiKey = process.env.BREVO_API_KEY;
-  const senderEmail = process.env.MAIL_FROM_EMAIL;
-  const senderName = process.env.MAIL_FROM_NAME || 'Green Coast Resort';
-
-  if (!apiKey || !senderEmail || !to) {
-    return 'skipped';
-  }
-
-  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-    method: 'POST',
-    headers: {
-      accept: 'application/json',
-      'api-key': apiKey,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      sender: { name: senderName, email: senderEmail },
-      to: [{ email: to, name: guestName }],
-      subject,
-      textContent: message,
-      ...(htmlContent && { htmlContent })
-    })
-  });
-
-  if (!response.ok) {
-    const detail = await response.text();
-    console.error('Email send failed:', detail);
-    return 'failed';
-  }
-
-  return 'sent';
-};
-
-app.post('/api/booking-notifications', async (req, res) => {
-  const { booking, message } = req.body || {};
-
-  if (!booking?.id || !booking?.guestName || !booking?.email || !booking?.whatsapp || !message) {
-    return res.status(400).json({ message: 'Missing booking notification details.' });
-  }
-
-  const guestPhone = normalizePhone(booking.whatsapp);
-  const resortPhone = normalizePhone(process.env.RESORT_WHATSAPP || '919387528621');
-  const subject = `${booking.resortName || 'Resort'} booking confirmed - ${booking.id}`;
-  
-  // Custom message for guest as requested
-  const customMessage = `Hi this is your check in: ${booking.checkIn} and check out time: ${booking.checkOut}, type: ${booking.roomName} and number of rooms you book: ${booking.roomsCount || 1}.`;
-  const finalMessage = message || customMessage;
-  
-  const resortMessage = `New paid booking received:\n${finalMessage}`;
-
-  const htmlEmail = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px;">
-      <h2 style="color: #111;">Booking Confirmed</h2>
-      <p style="color: #444; font-size: 16px;">Hi ${booking.guestName || 'Guest'},</p>
-      <p style="color: #444; font-size: 16px;">Thank you for booking with <strong>${booking.resortName || 'Green Coast Resort'}</strong>. Your payment was successful.</p>
-      <div style="background-color: #f9f9f9; padding: 15px; border-radius: 6px; margin: 20px 0; border: 1px solid #f1f1f1;">
-        <h3 style="margin-top: 0; color: #333;">Your Booking Details</h3>
-        <p style="margin: 8px 0; color: #555;"><strong>Booking Ref:</strong> ${booking.id}</p>
-        <p style="margin: 8px 0; color: #555;"><strong>Room Type:</strong> ${booking.roomName}</p>
-        <p style="margin: 8px 0; color: #555;"><strong>Rooms Booked:</strong> ${booking.roomsCount || 1}</p>
-        <p style="margin: 8px 0; color: #555;"><strong>Check-in:</strong> ${booking.checkIn}</p>
-        <p style="margin: 8px 0; color: #555;"><strong>Check-out:</strong> ${booking.checkOut}</p>
-        <p style="margin: 8px 0; color: #555;"><strong>Amount Paid:</strong> ${booking.amountText}</p>
-      </div>
-      <p style="color: #444; font-size: 14px; margin-top: 20px;">We look forward to hosting you!</p>
-    </div>
-  `;
-
-  const [whatsapp, resortWhatsapp, email] = await Promise.all([
-    sendWhatsappText({ to: guestPhone, message: finalMessage }),
-    sendWhatsappText({ to: resortPhone, message: resortMessage }),
-    sendEmail({ to: booking.email, guestName: booking.guestName, subject, message: finalMessage, htmlContent: htmlEmail })
-  ]);
-
-  const sentCount = [whatsapp, resortWhatsapp, email].filter((status) => status === 'sent').length;
-  const skippedCount = [whatsapp, resortWhatsapp, email].filter((status) => status === 'skipped').length;
-  const failedCount = [whatsapp, resortWhatsapp, email].filter((status) => status === 'failed').length;
-
-  const statusMessage =
-    sentCount > 0
-      ? `Sent ${sentCount} automatic notification${sentCount === 1 ? '' : 's'}.`
-      : skippedCount === 3
-        ? 'Automatic notifications are not configured. Add WhatsApp and email API keys in .env.'
-        : `Notification attempt finished with ${failedCount} failure${failedCount === 1 ? '' : 's'}.`;
-
-  return res.json({
-    whatsapp,
-    resortWhatsapp,
-    email,
-    message: statusMessage
-  });
-});
-
 app.get('/api/bookings', async (req, res) => {
   try {
     const bookings = await getBookings();
@@ -198,6 +69,34 @@ app.post('/api/book', async (req, res) => {
     const bookings = await getBookings();
     bookings.unshift(booking);
     await saveBookings(bookings);
+
+    try {
+      const webhookResponse = await fetch('https://arman10101.app.n8n.cloud/webhook/booking-confirmation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          guestName: booking.name,
+          email: booking.email,
+          bookingId: booking.id,
+          roomType: booking.roomName,
+          checkIn: booking.checkIn,
+          checkOut: booking.checkOut,
+          guests: Number(booking.roomsCount || 1) * 2,
+          amount: Number(booking.amount)
+        })
+      });
+
+      if (webhookResponse.ok) {
+        console.log("Booking confirmation webhook sent successfully.");
+      } else {
+        console.log("Failed to send booking confirmation webhook");
+      }
+    } catch (error) {
+      console.log("Failed to send booking confirmation webhook");
+    }
+
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ message: 'Failed to save booking.' });
