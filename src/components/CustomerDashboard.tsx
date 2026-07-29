@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { X, Calendar, Clock, CreditCard } from 'lucide-react';
+import { X, Calendar, Clock, CreditCard, Download } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import jsPDF from 'jspdf';
 
 interface Booking {
   id: string;
@@ -29,6 +30,44 @@ export default function CustomerDashboard({ onClose }: { onClose: () => void }) 
         .finally(() => setLoading(false));
     }
   }, [user]);
+
+  const downloadReceipt = (booking: Booking) => {
+    const doc = new jsPDF();
+    
+    // Add header
+    doc.setFillColor(3, 3, 3);
+    doc.rect(0, 0, 210, 40, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text("GREEN COAST RESORT", 20, 25);
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Booking Receipt", 20, 60);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+    doc.text(`Booking Reference: ${booking.id}`, 20, 80);
+    doc.text(`Guest Name: ${user?.name || 'Guest'}`, 20, 90);
+    doc.text(`Guest Email: ${user?.email || 'N/A'}`, 20, 100);
+    
+    doc.text(`Room: ${booking.roomName}`, 20, 120);
+    doc.text(`Check-in: ${booking.checkIn}`, 20, 130);
+    doc.text(`Check-out: ${booking.checkOut}`, 20, 140);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Total Amount Paid: Rs. ${booking.amount}`, 20, 160);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Thank you for choosing Green Coast Resort. We look forward to hosting you.", 20, 180);
+    
+    doc.save(`GreenCoast_Receipt_${booking.id}.pdf`);
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-12 animate-in fade-in duration-300">
@@ -84,11 +123,18 @@ export default function CustomerDashboard({ onClose }: { onClose: () => void }) 
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-between items-start md:items-end">
+                  <div className="flex flex-col justify-between items-start md:items-end gap-4">
                     <span className="px-3 py-1 bg-green-950/30 text-green-400 text-[10px] tracking-wider uppercase border border-green-900/30">
                       Confirmed
                     </span>
-                    <span className="text-[10px] font-mono text-neutral-600 mt-4 md:mt-0">
+                    <button
+                      onClick={() => downloadReceipt(booking)}
+                      className="flex items-center gap-2 px-3 py-1.5 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors text-[10px] uppercase tracking-widest font-semibold cursor-pointer"
+                    >
+                      <Download className="w-3 h-3" />
+                      Receipt
+                    </button>
+                    <span className="text-[10px] font-mono text-neutral-600 mt-2 md:mt-0">
                       Ref: {booking.id}
                     </span>
                   </div>

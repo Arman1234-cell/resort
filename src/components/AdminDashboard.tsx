@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   Calendar,
   CheckCircle,
@@ -177,10 +178,27 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
   const chartData = ROOMS.map((room) => {
     const roomBookings = bookings.filter((b) => b.roomName === room.name);
     const revenue = roomBookings.reduce((sum, b) => sum + Number(b.amount || 0), 0);
-    return { name: room.name, count: roomBookings.length, revenue };
-  });
+    return { name: room.name, value: roomBookings.length, revenue };
+  }).filter(d => d.value > 0);
+  
+  if (chartData.length === 0) {
+    chartData.push({ name: 'No Bookings', value: 1, revenue: 0 });
+  }
 
-  const maxRevenue = Math.max(...chartData.map((d) => d.revenue), 1);
+  const PIE_COLORS = ['#4ade80', '#2dd4bf', '#60a5fa', '#f87171', '#fbbf24'];
+
+  const last7DaysData = useMemo(() => {
+    const data = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const dayBookings = bookings.filter(b => isSameDate(new Date(b.timestamp), d));
+      const revenue = dayBookings.reduce((sum, b) => sum + Number(b.amount || 0), 0);
+      data.push({ date: dateStr, revenue });
+    }
+    return data;
+  }, [bookings]);
 
   const recentBookings = [...bookings]
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
@@ -370,39 +388,75 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
             <div className="flex items-center justify-between gap-4 mb-6">
               <div>
                 <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
-                  Room Performance
+                  Revenue Analytics
                 </span>
                 <h3 className="font-serif text-base text-white font-medium mt-1">
-                  Revenue and bookings by room
+                  Last 7 Days Revenue
                 </h3>
               </div>
-              <span className="font-mono text-[9px] text-neutral-500">
-                {new Date().toLocaleDateString('en-IN')}
-              </span>
             </div>
 
-            <div className="space-y-5">
-              {chartData.map((data) => {
-                const percent = Math.max(4, Math.round((data.revenue / maxRevenue) * 100));
-                return (
-                  <div key={data.name} className="space-y-2">
-                    <div className="flex justify-between gap-4 text-xs font-sans">
-                      <span className="text-neutral-300">{data.name}</span>
-                      <div className="flex items-center gap-3">
-                        <span className="text-neutral-500 font-mono">{data.count} bookings</span>
-                        <span className="text-white font-mono font-semibold">{formatInr(data.revenue)}</span>
-                      </div>
-                    </div>
-                    <div className="w-full h-3 bg-neutral-900 border border-neutral-850 rounded-full overflow-hidden">
-                      <div className="h-full bg-white transition-all duration-1000 ease-out" style={{ width: `${percent}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="w-full h-64 mt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={last7DaysData}>
+                  <XAxis dataKey="date" stroke="#525252" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#525252" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(val) => `₹${val}`} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0a0a0a', borderColor: '#262626', color: '#fff', fontSize: '12px' }}
+                    itemStyle={{ color: '#4ade80' }}
+                    formatter={(value: number) => [formatInr(value), 'Revenue']}
+                  />
+                  <Line type="monotone" dataKey="revenue" stroke="#4ade80" strokeWidth={2} dot={{ fill: '#4ade80', r: 4 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="lg:col-span-4 bg-neutral-950 border border-neutral-900 p-6 rounded-xs">
+          <div className="lg:col-span-4 bg-neutral-950 border border-neutral-900 p-6 rounded-xs flex flex-col">
+            <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
+              Room Popularity
+            </span>
+            <h3 className="font-serif text-base text-white font-medium mt-1 mb-2">
+              Bookings by Room
+            </h3>
+
+            <div className="flex-grow flex flex-col items-center justify-center min-h-[200px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0a0a0a', borderColor: '#262626', color: '#fff', fontSize: '12px', borderRadius: '4px' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap justify-center gap-3 mt-4">
+                {chartData.map((entry, index) => (
+                  <div key={entry.name} className="flex items-center gap-1.5 text-[10px] text-neutral-400">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }} />
+                    {entry.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+          <div className="bg-neutral-950 border border-neutral-900 p-6 rounded-xs">
             <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
               Latest Activity
             </span>
@@ -410,7 +464,7 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
               Recent bookings
             </h3>
 
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {recentBookings.length === 0 ? (
                 <p className="text-xs text-neutral-500 border border-dashed border-neutral-900 p-5 text-center">
                   No recent booking activity.

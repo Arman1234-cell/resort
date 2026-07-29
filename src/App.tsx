@@ -9,6 +9,7 @@ import Footer from './components/Footer';
 import BookingModal from './components/BookingModal';
 import AdminDashboard from './components/AdminDashboard';
 import CustomerDashboard from './components/CustomerDashboard';
+import Chatbot from './components/Chatbot';
 import { SectionLink } from './types';
 import { useAuth } from './context/AuthContext';
 import Lenis from 'lenis';
@@ -205,6 +206,9 @@ export default function App() {
       {isCustomerDashboardOpen && (
         <CustomerDashboard onClose={() => setIsCustomerDashboardOpen(false)} />
       )}
+
+      {/* Resort Chatbot */}
+      <Chatbot />
 
     </div>
   );
