@@ -18,9 +18,9 @@ const port = Number(process.env.PORT || 3002);
 const BOOKINGS_FILE = path.join(__dirname, 'bookings.json');
 const PRICES_FILE = path.join(__dirname, 'prices.json');
 
-// Initialize Redis if env vars are present (which Vercel injects for KV/Upstash)
-const redisUrl = process.env.KV_REST_API_URL;
-const redisToken = process.env.KV_REST_API_TOKEN;
+// Initialize Redis if env vars are present
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
 const redis = (redisUrl && redisToken) ? new Redis({ url: redisUrl, token: redisToken }) : null;
 
 // Helper to manage prices
