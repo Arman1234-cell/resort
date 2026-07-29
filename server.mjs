@@ -545,6 +545,87 @@ app.post('/api/pricing', async (req, res) => {
   }
 });
 
+// -- Notifications API --
+app.post('/api/booking-notifications', async (req, res) => {
+  try {
+    const { booking, message } = req.body;
+    
+    if (!booking || !message) {
+      return res.status(400).json({ message: 'Missing booking or message.' });
+    }
+
+    const token = process.env.WHATSAPP_ACCESS_TOKEN;
+    const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+    
+    let whatsappStatus = 'skipped';
+    let resortWhatsappStatus = 'skipped';
+    
+    if (token && phoneId) {
+       // Send to customer
+       const customerPhone = String(booking.whatsapp).replace(/\D/g, '');
+       if (customerPhone) {
+         try {
+           const waRes = await fetch(`https://graph.facebook.com/v17.0/${phoneId}/messages`, {
+             method: 'POST',
+             headers: {
+               'Authorization': `Bearer ${token}`,
+               'Content-Type': 'application/json'
+             },
+             body: JSON.stringify({
+               messaging_product: 'whatsapp',
+               to: customerPhone,
+               type: 'text',
+               text: { body: message }
+             })
+           });
+           whatsappStatus = waRes.ok ? 'sent' : 'failed';
+           if (!waRes.ok) console.error('Customer WhatsApp failed:', await waRes.text());
+         } catch (e) {
+           console.error(e);
+           whatsappStatus = 'failed';
+         }
+       }
+       
+       // Send to resort owner
+       const ownerPhone = process.env.WHATSAPP_RESORT_PHONE;
+       if (ownerPhone) {
+         try {
+           const waRes2 = await fetch(`https://graph.facebook.com/v17.0/${phoneId}/messages`, {
+             method: 'POST',
+             headers: {
+               'Authorization': `Bearer ${token}`,
+               'Content-Type': 'application/json'
+             },
+             body: JSON.stringify({
+               messaging_product: 'whatsapp',
+               to: ownerPhone,
+               type: 'text',
+               text: { body: `New Booking Paid!\n\n${message}` }
+             })
+           });
+           resortWhatsappStatus = waRes2.ok ? 'sent' : 'failed';
+           if (!waRes2.ok) console.error('Owner WhatsApp failed:', await waRes2.text());
+         } catch (e) {
+           console.error(e);
+           resortWhatsappStatus = 'failed';
+         }
+       }
+    }
+    
+    res.json({
+      success: true,
+      whatsapp: whatsappStatus,
+      resortWhatsapp: resortWhatsappStatus,
+      email: 'skipped',
+      message: (whatsappStatus === 'sent' || resortWhatsappStatus === 'sent') ? 'Notifications sent.' : 'No notifications configured.'
+    });
+    
+  } catch (error) {
+    console.error('Booking notifications error:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+});
+
 // -- Marketing API --
 app.post('/api/marketing', async (req, res) => {
   try {
