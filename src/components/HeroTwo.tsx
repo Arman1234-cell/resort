@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MagneticButton from './MagneticButton';
+import AbstractSculpture from './AbstractSculpture';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,9 +34,12 @@ export default function HeroTwo() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="hero-2" className="min-h-screen py-24 px-6 lg:px-12 flex items-center bg-neutral-950 border-t border-neutral-900 relative select-none">
+    <section ref={sectionRef} id="hero-2" className="min-h-screen py-24 px-6 lg:px-12 flex items-center bg-neutral-950 border-t border-neutral-900 relative select-none overflow-hidden">
       
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start">
+      {/* 3D Background Element */}
+      <AbstractSculpture />
+
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start relative z-10 pointer-events-none">
         
         {/* Column 1: Vertical editorial marker / section description (Col span: 3) */}
         <div className="md:col-span-3 flex flex-col gap-6 md:sticky md:top-32">
@@ -102,7 +106,7 @@ export default function HeroTwo() {
             </div>
 
             <MagneticButton strength={30}>
-              <button className="w-full md:w-auto self-start px-6 py-3 border border-neutral-700 text-[11px] font-display tracking-widest uppercase hover:bg-white hover:text-black hover:border-white text-white transition-all cursor-pointer">
+              <button className="w-full md:w-auto self-start px-6 py-3 border border-neutral-700 text-[11px] font-display tracking-widest uppercase hover:bg-white hover:text-black hover:border-white text-white transition-all cursor-pointer pointer-events-auto">
                 VIEW DETAILS
               </button>
             </MagneticButton>
