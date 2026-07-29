@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import fs from 'fs/promises';
+import cron from 'node-cron';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,6 +16,39 @@ const app = express();
 const port = Number(process.env.PORT || 3002);
 
 const BOOKINGS_FILE = path.join(__dirname, 'bookings.json');
+const PRICES_FILE = path.join(__dirname, 'prices.json');
+
+// Helper to manage prices
+const getPrices = async () => {
+  try {
+    const data = await fs.readFile(PRICES_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return {};
+    }
+    throw error;
+  }
+};
+
+const savePrices = async (prices) => {
+  await fs.writeFile(PRICES_FILE, JSON.stringify(prices, null, 2));
+};
+
+// Ensure files exist
+async function ensureFilesExist() {
+  try {
+    await fs.access(BOOKINGS_FILE);
+  } catch {
+    await fs.writeFile(BOOKINGS_FILE, JSON.stringify([]));
+  }
+  try {
+    await fs.access(PRICES_FILE);
+  } catch {
+    await fs.writeFile(PRICES_FILE, JSON.stringify({}));
+  }
+}
+ensureFilesExist();
 
 async function getBookings() {
   try {
@@ -195,7 +229,44 @@ app.post('/api/book', async (req, res) => {
     if (!booking.id || !booking.roomName || !booking.checkIn || !booking.checkOut) {
       return res.status(400).json({ message: 'Invalid booking data.' });
     }
+    
     const bookings = await getBookings();
+    
+    // Inventory Validation: max 2 rooms per type
+    const MAX_ROOMS_OF_TYPE = 2;
+    const requestedRoomsCount = Number(booking.roomsCount) || 1;
+    let valid = true;
+    
+    const dateCounts = {};
+    bookings.forEach((b) => {
+      if (b.roomName === booking.roomName && b.status === 'Paid') {
+        const count = Number(b.roomsCount) || 1;
+        let d = new Date(b.checkIn);
+        const end = new Date(b.checkOut);
+        while (d < end) {
+          const s = d.toISOString().split('T')[0];
+          dateCounts[s] = (dateCounts[s] || 0) + count;
+          d.setDate(d.getDate() + 1);
+        }
+      }
+    });
+
+    let checkD = new Date(booking.checkIn);
+    const checkEnd = new Date(booking.checkOut);
+    while (checkD < checkEnd) {
+      const s = checkD.toISOString().split('T')[0];
+      const existingCount = dateCounts[s] || 0;
+      if (existingCount + requestedRoomsCount > MAX_ROOMS_OF_TYPE) {
+        valid = false;
+        break;
+      }
+      checkD.setDate(checkD.getDate() + 1);
+    }
+
+    if (!valid) {
+      return res.status(409).json({ message: 'The selected dates are no longer available for this room type.' });
+    }
+
     bookings.unshift(booking);
     await saveBookings(bookings);
 
@@ -270,6 +341,62 @@ app.get('/api/daily-report', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to generate report.' });
+  }
+});
+
+// -- Automatic Daily Report Cron Job --
+// This runs every day at 8:00 AM (local server time)
+cron.schedule('0 8 * * *', async () => {
+  console.log('Running daily report cron job at 8:00 AM...');
+  const webhookUrl = process.env.N8N_DAILY_REPORT_WEBHOOK;
+  
+  if (!webhookUrl) {
+    console.log('N8N_DAILY_REPORT_WEBHOOK is not set in .env. Skipping daily report push.');
+    return;
+  }
+
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const bookings = await getBookings();
+    
+    let totalRoomsBookedToday = 0;
+    let totalIncomeToday = 0;
+    const todaysBookings = bookings.filter(b => b.timestamp && b.timestamp.startsWith(today));
+    for (const b of todaysBookings) {
+      const rooms = Number(b.roomsCount) || 1;
+      totalRoomsBookedToday += rooms;
+      totalIncomeToday += (Number(b.amount) || 0);
+    }
+    
+    const occupiedBookings = bookings.filter(b => {
+      return today >= b.checkIn && today < b.checkOut;
+    });
+    let occupiedRooms = 0;
+    for (const b of occupiedBookings) {
+      occupiedRooms += (Number(b.roomsCount) || 1);
+    }
+
+    const reportData = {
+      date: today,
+      newBookingsMadeToday: totalRoomsBookedToday,
+      totalIncomeToday: totalIncomeToday,
+      estimatedGuestsArrivingOrStayingToday: occupiedRooms * 2,
+      occupiedRoomsToday: occupiedRooms
+    };
+
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reportData)
+    });
+
+    if (response.ok) {
+      console.log('Daily report pushed to n8n successfully.');
+    } else {
+      console.log('Failed to push daily report to n8n.');
+    }
+  } catch (error) {
+    console.error('Error in daily report cron:', error);
   }
 });
 
@@ -424,6 +551,61 @@ app.get('/api/auth/me', (req, res) => {
 app.post('/api/auth/logout', (req, res) => {
   res.clearCookie('token');
   return res.json({ success: true });
+});
+
+// -- Dynamic Pricing API --
+app.get('/api/pricing', async (req, res) => {
+  try {
+    const prices = await getPrices();
+    res.json(prices);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch prices.' });
+  }
+});
+
+app.post('/api/pricing', async (req, res) => {
+  try {
+    const { roomName, date, price } = req.body;
+    if (!roomName || !date || typeof price !== 'number') {
+      return res.status(400).json({ message: 'Invalid pricing data.' });
+    }
+    const prices = await getPrices();
+    if (!prices[roomName]) prices[roomName] = {};
+    prices[roomName][date] = price;
+    await savePrices(prices);
+    res.json({ success: true, prices });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to save prices.' });
+  }
+});
+
+// -- Marketing API --
+app.post('/api/marketing', async (req, res) => {
+  try {
+    const { message, audience } = req.body; // audience: 'all' or 'recent'
+    if (!message) {
+      return res.status(400).json({ message: 'Message content is required.' });
+    }
+
+    const bookings = await getBookings();
+    
+    // Extract unique phone numbers
+    const uniquePhones = [...new Set(bookings.map(b => b.whatsapp).filter(Boolean))];
+    
+    // In a real application with WhatsApp Cloud API, you would loop through uniquePhones
+    // and send the template message to each one via fetch to https://graph.facebook.com/v17.0/...
+    
+    // For this prototype, we will just simulate it
+    console.log(`Sending marketing message to ${uniquePhones.length} customers: ${message}`);
+
+    res.json({ 
+      success: true, 
+      sentCount: uniquePhones.length,
+      message: `Successfully simulated sending marketing messages to ${uniquePhones.length} customers.` 
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to send marketing messages.' });
+  }
 });
 
 app.use(express.static(path.join(__dirname, 'dist')));

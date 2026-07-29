@@ -8,6 +8,7 @@ import HeroFiveFinal from './components/HeroFiveFinal';
 import Footer from './components/Footer';
 import BookingModal from './components/BookingModal';
 import AdminDashboard from './components/AdminDashboard';
+import CustomerDashboard from './components/CustomerDashboard';
 import { SectionLink } from './types';
 import { useAuth } from './context/AuthContext';
 import Lenis from 'lenis';
@@ -21,6 +22,7 @@ export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedRoomIdx, setSelectedRoomIdx] = useState(0);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isCustomerDashboardOpen, setIsCustomerDashboardOpen] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -161,6 +163,7 @@ export default function App() {
         currentSection={currentSection}
         onBookNow={() => handleBookRoom(0)}
         onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenCustomer={() => setIsCustomerDashboardOpen(true)}
       />
 
       {/* Main Section Stacks */}
@@ -196,6 +199,11 @@ export default function App() {
       {/* Owner Dashboard Overlay */}
       {isAdminOpen && (
         <AdminDashboard onClose={() => setIsAdminOpen(false)} />
+      )}
+
+      {/* Customer Dashboard Overlay */}
+      {isCustomerDashboardOpen && (
+        <CustomerDashboard onClose={() => setIsCustomerDashboardOpen(false)} />
       )}
 
     </div>

@@ -59,6 +59,56 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
   const { user, logout } = useAuth();
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'pricing' | 'marketing'>('dashboard');
+
+  // Pricing State
+  const [pricingDate, setPricingDate] = useState('');
+  const [pricingRoom, setPricingRoom] = useState(ROOMS[0].name);
+  const [pricingAmount, setPricingAmount] = useState('');
+  const [pricingStatus, setPricingStatus] = useState('');
+
+  // Marketing State
+  const [marketingMessage, setMarketingMessage] = useState('');
+  const [marketingStatus, setMarketingStatus] = useState('');
+
+  const handleSavePricing = async () => {
+    if (!pricingDate || !pricingAmount) return;
+    try {
+      const res = await fetch('/api/pricing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomName: pricingRoom, date: pricingDate, price: Number(pricingAmount) })
+      });
+      if (res.ok) {
+        setPricingStatus('Successfully saved dynamic pricing override!');
+        setTimeout(() => setPricingStatus(''), 3000);
+      }
+    } catch (e) {
+      console.error(e);
+      setPricingStatus('Failed to save.');
+    }
+  };
+
+  const handleSendMarketing = async () => {
+    if (!marketingMessage) return;
+    setMarketingStatus('Sending...');
+    try {
+      const res = await fetch('/api/marketing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: marketingMessage, audience: 'all' })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMarketingStatus(data.message);
+      } else {
+        setMarketingStatus('Failed to send.');
+      }
+    } catch (e) {
+      console.error(e);
+      setMarketingStatus('Failed to send.');
+    }
+  };
 
   // Close the modal automatically if a normal user logs in from here.
   useEffect(() => {
@@ -221,10 +271,39 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
             </button>
           </div>
         </div>
+
+        <div className="max-w-7xl mx-auto mt-6 flex items-center gap-4 border-b border-neutral-900 pb-0">
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`pb-3 text-xs font-mono tracking-widest uppercase cursor-pointer transition-colors ${
+              activeTab === 'dashboard' ? 'text-white border-b-2 border-white' : 'text-neutral-500 hover:text-neutral-300'
+            }`}
+          >
+            Dashboard
+          </button>
+          <button
+            onClick={() => setActiveTab('pricing')}
+            className={`pb-3 text-xs font-mono tracking-widest uppercase cursor-pointer transition-colors ${
+              activeTab === 'pricing' ? 'text-white border-b-2 border-white' : 'text-neutral-500 hover:text-neutral-300'
+            }`}
+          >
+            Dynamic Pricing
+          </button>
+          <button
+            onClick={() => setActiveTab('marketing')}
+            className={`pb-3 text-xs font-mono tracking-widest uppercase cursor-pointer transition-colors ${
+              activeTab === 'marketing' ? 'text-white border-b-2 border-white' : 'text-neutral-500 hover:text-neutral-300'
+            }`}
+          >
+            Marketing
+          </button>
+        </div>
       </header>
 
       <main className="flex-grow max-w-7xl mx-auto w-full px-6 lg:px-12 py-8 space-y-8">
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {activeTab === 'dashboard' && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 stagger-1">
+            <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-5 border border-neutral-900 bg-neutral-950 p-6 rounded-xs">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -447,6 +526,106 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
             )}
           </div>
         </section>
+          </div>
+        )}
+
+        {activeTab === 'pricing' && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 stagger-1">
+            <section className="bg-neutral-950 border border-neutral-900 p-6 rounded-xs max-w-2xl">
+              <span className="font-mono text-[9px] text-green-400 uppercase tracking-widest">
+                Revenue Management
+              </span>
+              <h2 className="font-serif text-2xl text-white font-medium mt-2 mb-6">
+                Dynamic Pricing
+              </h2>
+              <p className="text-xs text-neutral-400 mb-6 font-sans">
+                Override the default room prices for specific dates (e.g. for holidays or peak seasons).
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[10px] text-neutral-500 font-mono uppercase mb-2">Room Type</label>
+                  <select 
+                    value={pricingRoom}
+                    onChange={(e) => setPricingRoom(e.target.value)}
+                    className="w-full bg-neutral-900 border border-neutral-800 p-3 text-white text-xs font-sans outline-hidden"
+                  >
+                    {ROOMS.map(r => (
+                      <option key={r.name} value={r.name}>{r.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] text-neutral-500 font-mono uppercase mb-2">Target Date</label>
+                  <input 
+                    type="date"
+                    value={pricingDate}
+                    onChange={(e) => setPricingDate(e.target.value)}
+                    className="w-full bg-neutral-900 border border-neutral-800 p-3 text-white text-xs font-sans outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-neutral-500 font-mono uppercase mb-2">New Price (INR)</label>
+                  <input 
+                    type="number"
+                    value={pricingAmount}
+                    onChange={(e) => setPricingAmount(e.target.value)}
+                    placeholder="e.g. 5000"
+                    className="w-full bg-neutral-900 border border-neutral-800 p-3 text-white text-xs font-sans outline-hidden"
+                  />
+                </div>
+                <button
+                  onClick={handleSavePricing}
+                  className="w-full bg-white text-black font-semibold text-[10px] uppercase tracking-widest py-3 mt-4 hover:bg-neutral-200 transition-colors"
+                >
+                  Save Override
+                </button>
+                {pricingStatus && (
+                  <p className="text-green-400 text-xs mt-4 text-center">{pricingStatus}</p>
+                )}
+              </div>
+            </section>
+          </div>
+        )}
+
+        {activeTab === 'marketing' && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 stagger-1">
+            <section className="bg-neutral-950 border border-neutral-900 p-6 rounded-xs max-w-2xl">
+              <span className="font-mono text-[9px] text-green-400 uppercase tracking-widest">
+                Customer Engagement
+              </span>
+              <h2 className="font-serif text-2xl text-white font-medium mt-2 mb-6">
+                WhatsApp Broadcasts
+              </h2>
+              <p className="text-xs text-neutral-400 mb-6 font-sans">
+                Send special offers and updates directly to the WhatsApp numbers of previous guests.
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[10px] text-neutral-500 font-mono uppercase mb-2">Message Content</label>
+                  <textarea 
+                    value={marketingMessage}
+                    onChange={(e) => setMarketingMessage(e.target.value)}
+                    rows={6}
+                    placeholder="E.g. Special offer this weekend at Green Coast! Use code WEEKEND20 for 20% off your next booking."
+                    className="w-full bg-neutral-900 border border-neutral-800 p-3 text-white text-xs font-sans outline-hidden"
+                  ></textarea>
+                </div>
+                
+                <button
+                  onClick={handleSendMarketing}
+                  className="w-full bg-white text-black font-semibold text-[10px] uppercase tracking-widest py-3 hover:bg-neutral-200 transition-colors"
+                >
+                  Broadcast Message
+                </button>
+                {marketingStatus && (
+                  <p className="text-green-400 text-xs mt-4 text-center">{marketingStatus}</p>
+                )}
+              </div>
+            </section>
+          </div>
+        )}
       </main>
 
       <footer className="border-t border-neutral-900 bg-neutral-950/30 py-6 text-center text-neutral-600 font-mono text-[9px] tracking-widest mt-12">

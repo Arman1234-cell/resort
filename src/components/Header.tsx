@@ -6,9 +6,10 @@ interface HeaderProps {
   currentSection: string;
   onBookNow: () => void;
   onOpenAdmin: () => void;
+  onOpenCustomer: () => void;
 }
 
-export default function Header({ onNavigate, currentSection, onBookNow, onOpenAdmin }: HeaderProps) {
+export default function Header({ onNavigate, currentSection, onBookNow, onOpenAdmin, onOpenCustomer }: HeaderProps) {
   const { user, logout } = useAuth();
 
   return (
@@ -40,9 +41,13 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
             <div className="flex items-center gap-3 px-3 py-1 rounded-full">
               <img src={user.avatar} alt={user.name} className="w-5 h-5 rounded-full border border-neutral-700" referrerPolicy="no-referrer" />
               <span className="text-[11px] font-sans tracking-wide text-white truncate max-w-[100px]">{user.name}</span>
-              {user.isAdmin && (
+              {user.isAdmin ? (
                 <button onClick={onOpenAdmin} className="text-[9px] font-mono text-green-400 uppercase tracking-widest hover:text-green-300 cursor-pointer transition-colors border-l border-neutral-700 pl-3">
-                  Dashboard
+                  Admin Panel
+                </button>
+              ) : (
+                <button onClick={onOpenCustomer} className="text-[9px] font-mono text-blue-400 uppercase tracking-widest hover:text-blue-300 cursor-pointer transition-colors border-l border-neutral-700 pl-3">
+                  My Bookings
                 </button>
               )}
               <button onClick={logout} className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest hover:text-red-400 cursor-pointer transition-colors border-l border-neutral-700 pl-3">

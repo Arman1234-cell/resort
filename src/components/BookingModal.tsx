@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Check, CheckCircle, Copy, Mail, MessageSquare, QrCode, ShieldCheck, Smartphone, X } from 'lucide-react';
+import { CheckCircle, ShieldCheck, CreditCard, Clock, CalendarDays, X, User } from 'lucide-react';
 import CustomCalendar from './CustomCalendar';
+import { useAuth } from '../context/AuthContext';
+import GoogleLoginButton from './GoogleLoginButton';
 
 interface RazorpaySuccessResponse {
   razorpay_payment_id: string;
@@ -101,6 +103,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   const [whatsapp, setWhatsapp] = useState('');
   const [bookingId, setBookingId] = useState('');
   const [notifications, setNotifications] = useState<NotificationAlert[]>([]);
+  const { user } = useAuth();
   const [paymentTxId, setPaymentTxId] = useState('');
   const [paymentGateway, setPaymentGateway] = useState('Razorpay Standard Checkout');
   const [paymentError, setPaymentError] = useState('');
@@ -119,8 +122,14 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   const [roomsCount, setRoomsCount] = useState(1);
   const [allBookings, setAllBookings] = useState<any[]>([]);
   const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
+  const [dynamicPrices, setDynamicPrices] = useState<Record<string, Record<string, number>>>({});
 
   useEffect(() => {
+    fetch('/api/pricing')
+      .then(res => res.json())
+      .then(data => setDynamicPrices(data))
+      .catch(err => console.error('Failed to fetch pricing', err));
+
     fetch('/api/bookings')
       .then(res => res.json())
       .then(data => {
@@ -183,8 +192,21 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   const d1 = new Date(checkIn);
   const d2 = new Date(checkOut);
   const nights = Math.max(1, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
-  const roomPrice = ROOMS[selectedRoomIndex].price;
-  const subtotal = roomPrice * nights * roomsCount;
+  const roomName = ROOMS[selectedRoomIndex].name;
+  const defaultRoomPrice = ROOMS[selectedRoomIndex].price;
+  
+  let subtotal = 0;
+  let curr = new Date(checkIn);
+  for (let i = 0; i < nights; i++) {
+    const s = curr.toISOString().split('T')[0];
+    let priceForNight = defaultRoomPrice;
+    if (dynamicPrices[roomName] && typeof dynamicPrices[roomName][s] === 'number') {
+      priceForNight = dynamicPrices[roomName][s];
+    }
+    subtotal += priceForNight * roomsCount;
+    curr.setDate(curr.getDate() + 1);
+  }
+
   const gst = Math.round(subtotal * 0.12);
   const total = subtotal + gst;
 
@@ -206,6 +228,12 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
 
   const handleNextToPayment = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      alert('You must be logged in to make a booking. Please sign in with Google below.');
+      return;
+    }
+
     if (!name || !email || !whatsapp) {
       alert('Please fill in all guest details.');
       return;
@@ -214,6 +242,28 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     const normalizedPhone = normalizeIndianPhone(whatsapp);
     if (normalizedPhone.length < 10) {
       alert('Please enter a valid WhatsApp number.');
+      return;
+    }
+
+    if (!checkIn || !checkOut) {
+      alert('Please select check-in and check-out dates.');
+      return;
+    }
+
+    let valid = true;
+    let d = new Date(checkIn);
+    const end = new Date(checkOut);
+    while (d < end) {
+      const s = d.toISOString().split('T')[0];
+      if (unavailableDates.includes(s)) {
+        valid = false;
+        break;
+      }
+      d.setDate(d.getDate() + 1);
+    }
+
+    if (!valid) {
+      alert('The selected dates are no longer available for the chosen number of rooms. Please select different dates or reduce the room count.');
       return;
     }
 
@@ -633,9 +683,24 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                 </div>
               </div>
 
+              {!user && (
+                <div className="pt-4 border-t border-neutral-900 mt-6">
+                  <div className="bg-blue-950/20 border border-blue-900/50 p-4 rounded-xs mb-4">
+                    <p className="text-xs text-blue-200 font-sans leading-relaxed text-center">
+                      You must be logged in to confirm a booking.
+                    </p>
+                  </div>
+                  <GoogleLoginButton onSuccess={(user) => {
+                    setName(user.name);
+                    setEmail(user.email);
+                  }} />
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full py-3.5 bg-white text-neutral-950 font-display text-[10px] tracking-[0.2em] font-semibold uppercase hover:bg-neutral-200 transition-colors cursor-pointer rounded-xs"
+                disabled={!user}
+                className="w-full py-3.5 bg-white text-neutral-950 font-display text-[10px] tracking-[0.2em] font-semibold uppercase hover:bg-neutral-200 transition-colors cursor-pointer rounded-xs disabled:opacity-50 disabled:cursor-not-allowed mt-6"
               >
                 Proceed To Payment
               </button>
