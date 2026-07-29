@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import fs from 'fs/promises';
+import { Redis } from '@upstash/redis';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,8 +18,17 @@ const port = Number(process.env.PORT || 3002);
 const BOOKINGS_FILE = path.join(__dirname, 'bookings.json');
 const PRICES_FILE = path.join(__dirname, 'prices.json');
 
+// Initialize Redis if env vars are present (which Vercel injects for KV/Upstash)
+const redisUrl = process.env.KV_REST_API_URL;
+const redisToken = process.env.KV_REST_API_TOKEN;
+const redis = (redisUrl && redisToken) ? new Redis({ url: redisUrl, token: redisToken }) : null;
+
 // Helper to manage prices
 const getPrices = async () => {
+  if (redis) {
+    const data = await redis.get('prices');
+    return data || {};
+  }
   try {
     const data = await fs.readFile(PRICES_FILE, 'utf8');
     return JSON.parse(data);
@@ -31,11 +41,16 @@ const getPrices = async () => {
 };
 
 const savePrices = async (prices) => {
+  if (redis) {
+    await redis.set('prices', prices);
+    return;
+  }
   await fs.writeFile(PRICES_FILE, JSON.stringify(prices, null, 2));
 };
 
-// Ensure files exist
+// Ensure files exist (only needed for local fallback)
 async function ensureFilesExist() {
+  if (redis) return;
   try {
     await fs.access(BOOKINGS_FILE);
   } catch {
@@ -50,6 +65,10 @@ async function ensureFilesExist() {
 ensureFilesExist();
 
 async function getBookings() {
+  if (redis) {
+    const data = await redis.get('bookings');
+    return data || [];
+  }
   try {
     const data = await fs.readFile(BOOKINGS_FILE, 'utf-8');
     return JSON.parse(data);
@@ -62,6 +81,10 @@ async function getBookings() {
 }
 
 async function saveBookings(bookings) {
+  if (redis) {
+    await redis.set('bookings', bookings);
+    return;
+  }
   await fs.writeFile(BOOKINGS_FILE, JSON.stringify(bookings, null, 2), 'utf-8');
 }
 
