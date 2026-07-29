@@ -7,7 +7,6 @@ import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import fs from 'fs/promises';
-import cron from 'node-cron';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -341,62 +340,6 @@ app.get('/api/daily-report', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to generate report.' });
-  }
-});
-
-// -- Automatic Daily Report Cron Job --
-// This runs every day at 8:00 AM (local server time)
-cron.schedule('0 8 * * *', async () => {
-  console.log('Running daily report cron job at 8:00 AM...');
-  const webhookUrl = process.env.N8N_DAILY_REPORT_WEBHOOK;
-  
-  if (!webhookUrl) {
-    console.log('N8N_DAILY_REPORT_WEBHOOK is not set in .env. Skipping daily report push.');
-    return;
-  }
-
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const bookings = await getBookings();
-    
-    let totalRoomsBookedToday = 0;
-    let totalIncomeToday = 0;
-    const todaysBookings = bookings.filter(b => b.timestamp && b.timestamp.startsWith(today));
-    for (const b of todaysBookings) {
-      const rooms = Number(b.roomsCount) || 1;
-      totalRoomsBookedToday += rooms;
-      totalIncomeToday += (Number(b.amount) || 0);
-    }
-    
-    const occupiedBookings = bookings.filter(b => {
-      return today >= b.checkIn && today < b.checkOut;
-    });
-    let occupiedRooms = 0;
-    for (const b of occupiedBookings) {
-      occupiedRooms += (Number(b.roomsCount) || 1);
-    }
-
-    const reportData = {
-      date: today,
-      newBookingsMadeToday: totalRoomsBookedToday,
-      totalIncomeToday: totalIncomeToday,
-      estimatedGuestsArrivingOrStayingToday: occupiedRooms * 2,
-      occupiedRoomsToday: occupiedRooms
-    };
-
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(reportData)
-    });
-
-    if (response.ok) {
-      console.log('Daily report pushed to n8n successfully.');
-    } else {
-      console.log('Failed to push daily report to n8n.');
-    }
-  } catch (error) {
-    console.error('Error in daily report cron:', error);
   }
 });
 
