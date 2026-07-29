@@ -16,6 +16,8 @@ const FAQ_DATABASE: Record<string, string> = {
   'food': 'We have an on-site multi-cuisine restaurant open for breakfast, lunch, and dinner.',
   'wifi': 'Yes, complimentary high-speed Wi-Fi is available in all rooms and common areas.',
   'pets': 'We love pets! However, currently, we only allow service animals on the property.',
+  'book': 'You can easily book a room by clicking the "Book Now" button at the top of the website, or by contacting our front desk at +91 98765 43210.',
+  'room': 'You can easily book a room by clicking the "Book Now" button at the top of the website, or by contacting our front desk at +91 98765 43210.',
   'hello': 'Hello there! I am the Green Coast Resort AI Concierge. How can I help you today?',
   'hi': 'Hi! How can I help you today with your booking or stay?',
 };
@@ -23,7 +25,11 @@ const FAQ_DATABASE: Record<string, string> = {
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { id: '1', type: 'bot', text: 'Hello! I am your Resort Concierge. How can I help you today?' }
+    { 
+      id: '1', 
+      type: 'bot', 
+      text: 'Hello! I am your Resort Concierge. You can ask me about our location, prices, pool, food, wifi, pets, check in times, or how to book a room!' 
+    }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
