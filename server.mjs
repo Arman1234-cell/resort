@@ -198,6 +198,34 @@ app.post('/api/book', async (req, res) => {
     const bookings = await getBookings();
     bookings.unshift(booking);
     await saveBookings(bookings);
+
+    try {
+      const webhookResponse = await fetch('https://arman10101.app.n8n.cloud/webhook/booking-confirmation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          guestName: booking.name,
+          email: booking.email,
+          bookingId: booking.id,
+          roomType: booking.roomName,
+          checkIn: booking.checkIn,
+          checkOut: booking.checkOut,
+          guests: Number(booking.roomsCount || 1) * 2,
+          amount: Number(booking.amount)
+        })
+      });
+
+      if (webhookResponse.ok) {
+        console.log("n8n webhook sent successfully");
+      } else {
+        console.log("Failed to send n8n webhook");
+      }
+    } catch (error) {
+      console.log("Failed to send n8n webhook");
+    }
+
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ message: 'Failed to save booking.' });
