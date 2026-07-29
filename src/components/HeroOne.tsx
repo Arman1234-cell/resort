@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import MagneticButton from './MagneticButton';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -134,9 +135,10 @@ export default function HeroOne() {
       { opacity: 1, duration: 1.5, ease: 'power2.out' }
     );
 
-    gsap.fromTo('.text-block-1', 
+    gsap.to('.text-block-1', { opacity: 1, duration: 0.1 });
+    gsap.fromTo('.text-block-1 > *', 
       { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 1.2, delay: 0.6, ease: 'power3.out' }
+      { opacity: 1, y: 0, duration: 1.2, delay: 0.6, ease: 'power3.out', stagger: 0.2 }
     );
 
     return () => {
@@ -233,15 +235,17 @@ export default function HeroOne() {
                 A private ocean-facing sanctuary where architecture respects the shoreline and luxury finds its quietest expression.
               </p>
               <div className="pointer-events-auto">
-                <button 
-                  onClick={() => {
-                    const el = document.getElementById('hero-3');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="px-8 py-3.5 border border-neutral-300 text-[11px] font-display tracking-[0.15em] uppercase hover:bg-white hover:text-black hover:border-white text-white transition-all duration-300 cursor-pointer"
-                >
-                  DISCOVER THE SPACES
-                </button>
+                <MagneticButton strength={40}>
+                  <button 
+                    onClick={() => {
+                      const el = document.getElementById('hero-3');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="px-8 py-3.5 border border-neutral-300 text-[11px] font-display tracking-[0.15em] uppercase hover:bg-white hover:text-black hover:border-white text-white transition-all duration-300 cursor-pointer"
+                  >
+                    DISCOVER THE SPACES
+                  </button>
+                </MagneticButton>
               </div>
             </div>
           </div>

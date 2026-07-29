@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
+import MagneticButton from './MagneticButton';
 
 interface HeaderProps {
   onNavigate: (id: string) => void;
@@ -66,24 +67,28 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
 
         {/* Right Area: CTA & Menu */}
         <div className="flex items-center gap-4 lg:gap-6">
-          <button 
-            onClick={onBookNow}
-            className="px-4 py-2 text-[10px] lg:text-[11px] font-mono tracking-widest uppercase transition-all bg-white text-neutral-950 hover:bg-neutral-200 cursor-pointer border-0"
-          >
-            BOOK NOW
-          </button>
+          <MagneticButton strength={40}>
+            <button 
+              onClick={onBookNow}
+              className="px-4 py-2 text-[10px] lg:text-[11px] font-mono tracking-widest uppercase transition-all bg-white text-neutral-950 hover:bg-neutral-200 cursor-pointer border-0"
+            >
+              BOOK NOW
+            </button>
+          </MagneticButton>
 
           {/* Styled CSS-only Menu Trigger */}
-          <button className="group flex items-center gap-3 px-3 py-2 bg-neutral-900 border border-neutral-850 hover:border-neutral-700 transition-colors cursor-pointer">
-            <span className="font-sans text-[11px] font-medium tracking-widest uppercase text-neutral-300">
-              MENU
-            </span>
-            {/* 2-bar menu icon built via HTML elements */}
-            <div className="flex flex-col gap-1 w-5">
-              <div className="h-0.5 w-full bg-neutral-200 transition-all group-hover:translate-y-[1px]"></div>
-              <div className="h-0.5 w-4 bg-neutral-200 ml-auto transition-all group-hover:w-full"></div>
-            </div>
-          </button>
+          <MagneticButton strength={20}>
+            <button className="group flex items-center gap-3 px-3 py-2 bg-neutral-900 border border-neutral-850 hover:border-neutral-700 transition-colors cursor-pointer">
+              <span className="font-sans text-[11px] font-medium tracking-widest uppercase text-neutral-300">
+                MENU
+              </span>
+              {/* 2-bar menu icon built via HTML elements */}
+              <div className="flex flex-col gap-1 w-5">
+                <div className="h-0.5 w-full bg-neutral-200 transition-all group-hover:translate-y-[1px]"></div>
+                <div className="h-0.5 w-4 bg-neutral-200 ml-auto transition-all group-hover:w-full"></div>
+              </div>
+            </button>
+          </MagneticButton>
         </div>
 
       </div>

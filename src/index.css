@@ -15,6 +15,12 @@ html {
   font-family: var(--font-sans);
 }
 
+@media (pointer: fine) {
+  body, body *, a, button {
+    cursor: none !important;
+  }
+}
+
 /* Scrollbar Utility for Horizontal Scrolling Container */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

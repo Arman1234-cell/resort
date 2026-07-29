@@ -10,6 +10,8 @@ import BookingModal from './components/BookingModal';
 import AdminDashboard from './components/AdminDashboard';
 import CustomerDashboard from './components/CustomerDashboard';
 import Chatbot from './components/Chatbot';
+import CustomCursor from './components/CustomCursor';
+import NoiseOverlay from './components/NoiseOverlay';
 import { SectionLink } from './types';
 import { useAuth } from './context/AuthContext';
 import Lenis from 'lenis';
@@ -158,6 +160,10 @@ export default function App() {
   return (
     <div className="relative min-h-screen bg-neutral-950 text-neutral-100 font-sans antialiased selection:bg-white selection:text-black transition-colors duration-300">
       
+      {/* Aesthetic Overlays */}
+      <CustomCursor />
+      <NoiseOverlay />
+
       {/* Premium Navigation Header */}
       <Header 
         onNavigate={handleNavigate}
