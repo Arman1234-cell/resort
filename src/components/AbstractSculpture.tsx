@@ -36,7 +36,7 @@ function Sculpture() {
 
 export default function AbstractSculpture() {
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-auto z-0" style={{ mixBlendMode: 'screen' }}>
+    <div className="fixed inset-0 w-full h-screen pointer-events-none z-[1]" style={{ mixBlendMode: 'screen' }}>
       <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
