@@ -3,7 +3,7 @@ import HeroTwo from '../components/HeroTwo';
 import HeroThreeScroll from '../components/HeroThreeScroll';
 import HeroFourBento from '../components/HeroFourBento';
 import HeroFiveFinal from '../components/HeroFiveFinal';
-import AbstractSculpture from '../components/AbstractSculpture';
+
 
 interface HomeProps {
   onBookNow: (roomIndex: number) => void;
@@ -159,11 +159,8 @@ export default function Home({ onBookNow }: HomeProps) {
       {/* ── SECTION 3: Horizontal Room Scroll Gallery ────────────── */}
       <HeroThreeScroll onBookRoom={onBookNow} />
 
-      {/* ── SECTION 4: Bento Features Grid with 3D background ────── */}
-      <div className="relative overflow-hidden">
-        <AbstractSculpture />
-        <HeroFourBento />
-      </div>
+      {/* ── SECTION 4: Bento Features Grid ────── */}
+      <HeroFourBento />
 
       {/* ── SECTION 5: Arch CTA / Call to Book ───────────────────── */}
       <HeroFiveFinal onBookRoom={() => onBookNow(0)} />

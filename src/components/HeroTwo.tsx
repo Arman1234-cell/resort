@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MagneticButton from './MagneticButton';
-import AbstractSculpture from './AbstractSculpture';
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -36,8 +36,6 @@ export default function HeroTwo() {
   return (
     <section ref={sectionRef} id="hero-2" className="min-h-screen py-24 px-6 lg:px-12 flex items-center bg-neutral-950 border-t border-neutral-900 relative select-none overflow-hidden">
       
-      {/* 3D Background Element */}
-      <AbstractSculpture />
 
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start relative z-10 pointer-events-none">
         
