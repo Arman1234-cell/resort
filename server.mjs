@@ -493,8 +493,8 @@ app.post('/api/auth/google', async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
-    // Send login notification
-    sendEmail({
+    // Send login notification (Awaited for Serverless)
+    await sendEmail({
       to: email,
       guestName: name,
       subject: 'Security Alert: New Login to Green Coast Resort',
@@ -529,13 +529,13 @@ app.get('/api/auth/me', (req, res) => {
   }
 });
 
-app.post('/api/auth/logout', (req, res) => {
+app.post('/api/auth/logout', async (req, res) => {
   const token = req.cookies?.token;
   if (token) {
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
       if (decoded && decoded.email) {
-        sendEmail({
+        await sendEmail({
           to: decoded.email,
           guestName: decoded.name,
           subject: 'Security Alert: Logged Out of Green Coast Resort',
