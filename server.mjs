@@ -493,6 +493,21 @@ app.post('/api/auth/google', async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
+    // Send login notification
+    sendEmail({
+      to: email,
+      guestName: name,
+      subject: 'Security Alert: New Login to Green Coast Resort',
+      message: `Hi ${name},\n\nYou have successfully logged in to Green Coast Resort on ${new Date().toLocaleString()}.\n\nIf this was not you, please secure your account.`,
+      htmlContent: `<div style="font-family: Arial, sans-serif; padding: 20px;">
+        <h2 style="color: #333;">Login Alert</h2>
+        <p>Hi ${name},</p>
+        <p>You have successfully logged in to Green Coast Resort.</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+        <p style="color: #666; font-size: 12px; margin-top: 20px;">If this was not you, please contact support immediately.</p>
+      </div>`
+    }).catch(console.error);
+
     return res.json({ success: true, user });
   } catch (error) {
     console.error('Google verification failed:', error);
@@ -515,6 +530,28 @@ app.get('/api/auth/me', (req, res) => {
 });
 
 app.post('/api/auth/logout', (req, res) => {
+  const token = req.cookies?.token;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      if (decoded && decoded.email) {
+        sendEmail({
+          to: decoded.email,
+          guestName: decoded.name,
+          subject: 'Security Alert: Logged Out of Green Coast Resort',
+          message: `Hi ${decoded.name},\n\nYou have successfully logged out of Green Coast Resort.`,
+          htmlContent: `<div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #333;">Logout Alert</h2>
+            <p>Hi ${decoded.name},</p>
+            <p>You have successfully logged out of Green Coast Resort.</p>
+          </div>`
+        }).catch(console.error);
+      }
+    } catch (e) {
+      // Ignore token errors on logout
+    }
+  }
+
   res.clearCookie('token');
   return res.json({ success: true });
 });
