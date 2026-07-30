@@ -1,27 +1,22 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
-    <footer className="bg-black py-16 border-t border-white/5">
-      <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
-        <div>
-          <h3 className="text-2xl font-serif text-[var(--color-brand-accent)] mb-4">Halc Resort</h3>
-          <p className="text-[var(--color-brand-muted)]">Experience luxury redefined.</p>
+    <footer className="bg-[#0A0A0A] border-t border-white/5 py-12 px-5 sm:px-8 font-sans mt-auto">
+      <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-white/40 text-xs">
+        <div className="flex flex-col items-center md:items-start">
+          <span className="font-serif tracking-widest text-white uppercase font-bold text-sm">
+            Green Coast Resort
+          </span>
+          <span className="text-[8px] tracking-[0.2em] mt-0.5">
+            © {new Date().getFullYear()} GREEN COAST. ALL RIGHTS RESERVED.
+          </span>
         </div>
-        <div className="flex flex-col space-y-3">
-          <Link to="/rooms" className="text-sm tracking-widest uppercase hover:text-[var(--color-brand-accent)] transition-colors">Accommodations</Link>
-          <Link to="/amenities" className="text-sm tracking-widest uppercase hover:text-[var(--color-brand-accent)] transition-colors">Amenities</Link>
-          <Link to="/contact" className="text-sm tracking-widest uppercase hover:text-[var(--color-brand-accent)] transition-colors">Contact</Link>
+        <div className="flex gap-6 sm:gap-8 flex-wrap justify-center">
+          <Link to="/rooms" className="hover:text-white transition-colors duration-300">Accommodations</Link>
+          <Link to="/amenities" className="hover:text-white transition-colors duration-300">Amenities</Link>
+          <Link to="/contact" className="hover:text-white transition-colors duration-300">Contact</Link>
         </div>
-        <div>
-          <h4 className="text-sm tracking-widest uppercase mb-4">Contact Us</h4>
-          <p className="text-[var(--color-brand-muted)]">contact@halcresort.com</p>
-          <p className="text-[var(--color-brand-muted)]">+1 (800) 123-4567</p>
-        </div>
-      </div>
-      <div className="container mx-auto px-6 mt-16 pt-8 border-t border-white/5 text-center text-xs text-[var(--color-brand-muted)]">
-        &copy; {new Date().getFullYear()} Halc Resort. All rights reserved.
       </div>
     </footer>
   );
