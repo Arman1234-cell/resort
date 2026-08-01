@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CheckCircle, ShieldCheck, CreditCard, Clock, CalendarDays, X, User } from 'lucide-react';
+import { CheckCircle, ShieldCheck, X, Mail, MessageSquare } from 'lucide-react';
 import CustomCalendar from './CustomCalendar';
 import { useAuth } from '../context/AuthContext';
 import GoogleLoginButton from './GoogleLoginButton';
@@ -24,18 +24,10 @@ interface RazorpayOptions {
   name: string;
   description: string;
   order_id: string;
-  prefill: {
-    name: string;
-    email: string;
-    contact: string;
-  };
+  prefill: { name: string; email: string; contact: string };
   notes: Record<string, string>;
-  theme: {
-    color: string;
-  };
-  modal: {
-    ondismiss: () => void;
-  };
+  theme: { color: string };
+  modal: { ondismiss: () => void };
   handler: (response: RazorpaySuccessResponse) => void;
 }
 
@@ -78,9 +70,7 @@ interface NotificationResult {
 }
 
 const RESORT_NAME = 'Green Coast Resort';
-const RESORT_UPI_ID = '9387528621@ptsbi';
 const RESORT_WHATSAPP = '919387528621';
-const RESORT_EMAIL = 'bookings@greencoastresort.in';
 
 const formatInr = (amount: number) =>
   new Intl.NumberFormat('en-IN', {
@@ -126,32 +116,29 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
 
   useEffect(() => {
     fetch('/api/pricing')
-      .then(res => res.json())
-      .then(data => setDynamicPrices(data))
-      .catch(err => console.error('Failed to fetch pricing', err));
+      .then((res) => res.json())
+      .then((data) => setDynamicPrices(data))
+      .catch((err) => console.error('Failed to fetch pricing', err));
 
     fetch('/api/bookings')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setAllBookings(data);
-        }
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setAllBookings(data);
       })
-      .catch(err => console.error('Failed to fetch bookings', err));
+      .catch((err) => console.error('Failed to fetch bookings', err));
   }, []);
 
-  // Compute unavailable dates based on selected room and quantity
+  // Compute unavailable dates based on max 2 rooms per type
   useEffect(() => {
     const roomName = ROOMS[selectedRoomIndex].name;
     const dateCounts: Record<string, number> = {};
-    
-    allBookings.forEach(b => {
+
+    allBookings.forEach((b) => {
       if (b.roomName === roomName && b.status === 'Paid') {
         const count = Number(b.roomsCount) || 1;
-        // Mark all dates from checkIn to checkOut as occupied
         let d = new Date(b.checkIn);
         const end = new Date(b.checkOut);
-        while (d < end) { // exclude checkout day
+        while (d < end) {
           const s = d.toISOString().split('T')[0];
           dateCounts[s] = (dateCounts[s] || 0) + count;
           d.setDate(d.getDate() + 1);
@@ -160,7 +147,6 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     });
 
     const unavailable: string[] = [];
-    // Max 2 rooms of each type
     const MAX_ROOMS_OF_TYPE = 2;
     for (const [date, count] of Object.entries(dateCounts)) {
       if (count + roomsCount > MAX_ROOMS_OF_TYPE) {
@@ -168,8 +154,6 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
       }
     }
     setUnavailableDates(unavailable);
-    
-    // If current checkIn or checkOut falls in unavailable, we might want to warn, but let the calendar handle blocking it next time.
   }, [allBookings, selectedRoomIndex, roomsCount]);
 
   useEffect(() => {
@@ -194,7 +178,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   const nights = Math.max(1, Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
   const roomName = ROOMS[selectedRoomIndex].name;
   const defaultRoomPrice = ROOMS[selectedRoomIndex].price;
-  
+
   let subtotal = 0;
   let curr = new Date(checkIn);
   for (let i = 0; i < nights; i++) {
@@ -210,25 +194,20 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
   const gst = Math.round(subtotal * 0.12);
   const total = subtotal + gst;
 
+  function buildBookingMessage(id: string, txId: string) {
+    return `Hi this is your check in: ${checkIn} and check out time: ${checkOut}, type: ${ROOMS[selectedRoomIndex].name} and number of rooms you book: ${roomsCount}.\nAmount paid: ${formatInr(total)}\nPayment reference: ${txId}`;
+  }
+
   const bookingMessage = useMemo(() => {
     const id = bookingId || 'Pending';
     return buildBookingMessage(id, paymentTxId || 'Not available');
   }, [bookingId, name, selectedRoomIndex, checkIn, checkOut, nights, roomsCount, total, paymentTxId]);
 
-
-  const customerWhatsappUrl = `https://wa.me/${normalizeIndianPhone(whatsapp)}?text=${encodeURIComponent(bookingMessage)}`;
-  const resortWhatsappUrl = `https://wa.me/${RESORT_WHATSAPP}?text=${encodeURIComponent(`New paid booking received:\n${bookingMessage}`)}`;
-  const mailUrl = `mailto:${email}?subject=${encodeURIComponent(`${RESORT_NAME} booking confirmed - ${bookingId}`)}&body=${encodeURIComponent(bookingMessage)}`;
-
   if (!isOpen) return null;
-
-  function buildBookingMessage(id: string, txId: string) {
-    return `Hi this is your check in: ${checkIn} and check out time: ${checkOut}, type: ${ROOMS[selectedRoomIndex].name} and number of rooms you book: ${roomsCount}.\nAmount paid: ${formatInr(total)}\nPayment reference: ${txId}`;
-  }
 
   const handleNextToPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       alert('You must be logged in to make a booking. Please sign in with Google below.');
       return;
@@ -300,11 +279,11 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
       timestamp: new Date().toISOString()
     };
 
-    // Save to localStorage as fallback
-    const existingBookingsStr = localStorage.getItem('greencoast_bookings') || '[]';
-    const existingBookings = JSON.parse(existingBookingsStr);
-    existingBookings.unshift(newBooking);
-    localStorage.setItem('greencoast_bookings', JSON.stringify(existingBookings));
+    // Save to localStorage as a local fallback
+    const existingStr = localStorage.getItem('greencoast_bookings') || '[]';
+    const existing = JSON.parse(existingStr);
+    existing.unshift(newBooking);
+    localStorage.setItem('greencoast_bookings', JSON.stringify(existing));
 
     // Save to server
     try {
@@ -313,8 +292,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newBooking)
       });
-      // Refresh local state bookings
-      setAllBookings(prev => [newBooking, ...prev]);
+      setAllBookings((prev) => [newBooking, ...prev]);
     } catch (error) {
       console.error('Failed to save booking to server:', error);
     }
@@ -389,7 +367,8 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
 
       const result = (await response.json()) as NotificationResult;
       const anySent = result.whatsapp === 'sent' || result.resortWhatsapp === 'sent' || result.email === 'sent';
-      const allSkipped = result.whatsapp === 'skipped' && result.resortWhatsapp === 'skipped' && result.email === 'skipped';
+      const allSkipped =
+        result.whatsapp === 'skipped' && result.resortWhatsapp === 'skipped' && result.email === 'skipped';
 
       if (anySent) {
         setNotificationStatus('sent');
@@ -464,9 +443,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
           check_in: checkIn,
           check_out: checkOut
         },
-        theme: {
-          color: '#050505'
-        },
+        theme: { color: '#050505' },
         modal: {
           ondismiss: () => {
             setStep('payment');
@@ -518,10 +495,9 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
     }
   };
 
-
-
   return (
     <>
+      {/* Toast notification stack */}
       <div className="fixed top-24 right-6 z-55 flex flex-col gap-4 max-w-sm w-full pointer-events-none select-none">
         {notifications.map((n) => (
           <div
@@ -558,8 +534,11 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
         ))}
       </div>
 
+      {/* Modal backdrop + modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs select-none">
         <div className="w-full max-w-xl bg-neutral-950 border border-neutral-900 shadow-2xl relative overflow-hidden flex flex-col text-neutral-200 rounded-xs max-h-[90vh]">
+
+          {/* Modal header */}
           <div className="p-5 border-b border-neutral-900 flex justify-between items-center bg-[#050505]">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
@@ -582,6 +561,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
             )}
           </div>
 
+          {/* Step: Form */}
           {step === 'form' && (
             <form onSubmit={handleNextToPayment} className="p-6 overflow-y-auto space-y-5 flex-grow">
               <div className="grid grid-cols-2 gap-4">
@@ -618,9 +598,9 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
 
               <div>
                 <label className="block font-mono text-[9px] text-neutral-500 uppercase tracking-widest mb-1.5">
-                  Select Dates (Check-In & Check-Out)
+                  Select Dates (Check-In &amp; Check-Out)
                 </label>
-                <CustomCalendar 
+                <CustomCalendar
                   checkIn={checkIn}
                   checkOut={checkOut}
                   onChange={(inDate, outDate) => { setCheckIn(inDate); setCheckOut(outDate); }}
@@ -666,6 +646,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                 </div>
               </div>
 
+              {/* Price summary */}
               <div className="p-4 bg-neutral-950 border border-neutral-900/80 rounded-xs space-y-2 mt-4">
                 <div className="flex justify-between text-xs text-neutral-400 gap-4">
                   <span>
@@ -683,6 +664,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                 </div>
               </div>
 
+              {/* Login prompt */}
               {!user && (
                 <div className="pt-4 border-t border-neutral-900 mt-6">
                   <div className="bg-blue-950/20 border border-blue-900/50 p-4 rounded-xs mb-4">
@@ -690,9 +672,9 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                       You must be logged in to confirm a booking.
                     </p>
                   </div>
-                  <GoogleLoginButton onSuccess={(user) => {
-                    setName(user.name);
-                    setEmail(user.email);
+                  <GoogleLoginButton onSuccess={(u) => {
+                    setName(u.name);
+                    setEmail(u.email);
                   }} />
                 </div>
               )}
@@ -707,6 +689,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
             </form>
           )}
 
+          {/* Step: Payment */}
           {step === 'payment' && (
             <div className="p-6 space-y-6 flex-grow overflow-y-auto">
               <div className="text-center bg-[#070707] py-4 border border-neutral-900">
@@ -763,10 +746,10 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
             </div>
           )}
 
+          {/* Step: Processing */}
           {step === 'processing' && (
             <div className="p-12 flex flex-col items-center justify-center space-y-6 flex-grow min-h-[300px]">
               <div className="w-10 h-10 border-2 border-neutral-800 border-t-white rounded-full animate-spin" />
-
               <div className="text-center space-y-1">
                 <h4 className="font-serif text-sm text-neutral-200 font-medium tracking-wide">
                   Verifying Payment...
@@ -778,6 +761,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
             </div>
           )}
 
+          {/* Step: Success */}
           {step === 'success' && (
             <div className="p-8 flex flex-col items-center justify-center text-center flex-grow space-y-6 overflow-y-auto">
               <div className="p-3 bg-green-950/30 rounded-full border border-green-800/50">
@@ -812,7 +796,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
                 </p>
               </div>
 
-              <div className="w-full bg-neutral-950 border border-neutral-900 p-4 rounded-xs text-left text-xs font-sans space-y-2 max-w-sm">
+              <div className="w-full max-w-sm bg-neutral-950 border border-neutral-900 p-4 rounded-xs text-left text-xs font-sans space-y-2">
                 <div className="flex justify-between">
                   <span className="text-neutral-500">Booking Reference</span>
                   <span className="font-mono text-neutral-200 font-semibold">{bookingId}</span>
@@ -851,6 +835,7 @@ export default function BookingModal({ isOpen, onClose, preselectedRoomIndex }: 
               </button>
             </div>
           )}
+
         </div>
       </div>
     </>

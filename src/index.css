@@ -4,7 +4,7 @@
 @theme {
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", Georgia, serif;
-  
+
   --color-brand-light: #F4F1ED;
   --color-brand-dark: #0A0A0A;
   --color-brand-accent: #CBA471;
@@ -26,7 +26,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Premium Typography Adjustments */
+/* Premium Typography */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
   font-weight: 400;
@@ -48,7 +48,7 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Scrollbar Utility for Horizontal Scrolling Container */
+/* Utility to hide scrollbars on horizontal scroll containers */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -57,7 +57,7 @@ h1, h2, h3, h4, h5, h6 {
   scrollbar-width: none;
 }
 
-/* Custom Scrollbar */
+/* Custom scrollbar for the page */
 ::-webkit-scrollbar {
   width: 8px;
 }

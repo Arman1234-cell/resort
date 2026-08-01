@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import MagneticButton from '../MagneticButton';
 
@@ -13,13 +13,50 @@ interface HeaderProps {
 export default function Header({ onNavigate, currentSection, onBookNow, onOpenAdmin, onOpenCustomer }: HeaderProps) {
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Add frosted glass background when scrolled past top
+      setIsScrolled(currentScrollY > 20);
+
+      // Hide/Show logic with a small 5px threshold to prevent accidental triggering
+      if (currentScrollY > 100) {
+        if (currentScrollY > lastScrollY.current + 5) {
+          // Scrolling down
+          setIsHidden(true);
+        } else if (currentScrollY < lastScrollY.current - 5) {
+          // Scrolling up
+          setIsHidden(false);
+        }
+      } else {
+        // Always show at top
+        setIsHidden(false);
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-neutral-950/80 backdrop-blur-md border-b border-neutral-900 px-4 sm:px-6 lg:px-12 py-3 sm:py-4 transition-all">
+      <header 
+        className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-12 py-3 sm:py-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          isHidden ? '-translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
+        } ${
+          isScrolled ? 'bg-neutral-950/80 backdrop-blur-md border-b border-neutral-900' : 'bg-transparent border-b-transparent'
+        }`}
+      >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          
-          {/* Left Area: Logo & Tagline */}
+
+          {/* Left: Logo and tagline */}
           <div className="flex flex-col select-none cursor-pointer" onClick={() => onNavigate('hero-1')}>
             <div className="flex items-center gap-2">
               <span className="font-serif text-xl lg:text-2xl font-semibold tracking-tight text-white">
@@ -31,15 +68,15 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
             </span>
           </div>
 
-          {/* Center Area: Pill Switch */}
+          {/* Center: Pill nav (desktop only) */}
           <div className="hidden md:flex items-center p-1 rounded-full bg-neutral-900/80 border border-neutral-800 transition-all">
-            <button 
+            <button
               onClick={() => onNavigate('hero-3')}
               className="px-5 py-1.5 text-[11px] font-sans tracking-widest uppercase font-medium text-neutral-200 hover:text-white transition-colors rounded-full bg-neutral-800 shadow-xs cursor-pointer mr-1"
             >
               ROOMS
             </button>
-            
+
             {user ? (
               <div className="flex items-center gap-3 px-3 py-1 rounded-full">
                 <img src={user.avatar} alt={user.name} className="w-5 h-5 rounded-full border border-neutral-700" referrerPolicy="no-referrer" />
@@ -58,7 +95,7 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
                 </button>
               </div>
             ) : (
-              <button 
+              <button
                 onClick={onOpenAdmin}
                 className="px-5 py-1.5 text-[11px] font-sans tracking-widest uppercase font-medium text-neutral-500 hover:text-neutral-300 transition-colors rounded-full cursor-pointer"
               >
@@ -67,10 +104,10 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
             )}
           </div>
 
-          {/* Right Area: CTA & Menu */}
+          {/* Right: CTA + Menu Toggle */}
           <div className="flex items-center gap-4 lg:gap-6">
             <MagneticButton strength={40}>
-              <button 
+              <button
                 onClick={onBookNow}
                 className="hidden sm:block px-4 py-2 text-[10px] lg:text-[11px] font-mono tracking-widest uppercase transition-all bg-white text-neutral-950 hover:bg-neutral-200 cursor-pointer border-0"
               >
@@ -78,9 +115,8 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
               </button>
             </MagneticButton>
 
-            {/* Hamburger Menu Trigger */}
             <MagneticButton strength={20}>
-              <button 
+              <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="group flex items-center gap-3 px-3 py-2 bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-colors cursor-pointer"
               >
@@ -102,7 +138,7 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
       {isMenuOpen && (
         <div className="fixed inset-0 top-[57px] sm:top-[65px] z-40 bg-neutral-950/97 backdrop-blur-xl border-t border-neutral-900 flex flex-col justify-start p-8 animate-in fade-in slide-in-from-top-5 duration-300 md:hidden">
           <nav className="flex flex-col gap-6 text-left">
-            <button 
+            <button
               onClick={() => { onNavigate('hero-3'); setIsMenuOpen(false); }}
               className="text-left font-serif text-3xl text-neutral-300 hover:text-white uppercase tracking-wider transition-colors cursor-pointer"
             >
@@ -127,14 +163,14 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
                 </div>
 
                 {user.isAdmin ? (
-                  <button 
+                  <button
                     onClick={() => { onOpenAdmin(); setIsMenuOpen(false); }}
                     className="text-left font-mono text-xs text-green-400 uppercase tracking-widest hover:text-green-300 cursor-pointer"
                   >
                     Admin Panel
                   </button>
                 ) : (
-                  <button 
+                  <button
                     onClick={() => { onOpenCustomer(); setIsMenuOpen(false); }}
                     className="text-left font-mono text-xs text-blue-400 uppercase tracking-widest hover:text-blue-300 cursor-pointer"
                   >
@@ -142,7 +178,7 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
                   </button>
                 )}
 
-                <button 
+                <button
                   onClick={async () => { await logout(); setIsMenuOpen(false); }}
                   className="text-left font-mono text-xs text-neutral-500 uppercase tracking-widest hover:text-red-400 cursor-pointer"
                 >
@@ -150,7 +186,7 @@ export default function Header({ onNavigate, currentSection, onBookNow, onOpenAd
                 </button>
               </div>
             ) : (
-              <button 
+              <button
                 onClick={() => { onOpenAdmin(); setIsMenuOpen(false); }}
                 className="text-left font-serif text-3xl text-neutral-300 hover:text-white uppercase tracking-wider transition-colors cursor-pointer border-t border-neutral-900 pt-6 mt-4"
               >

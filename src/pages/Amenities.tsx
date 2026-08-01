@@ -4,7 +4,7 @@ export default function Amenities() {
   return (
     <div className="pt-32 pb-24 min-h-screen container mx-auto px-6">
       <h1 className="text-4xl md:text-5xl font-serif mb-16 text-center">Resort Amenities</h1>
-      
+
       <div className="space-y-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="aspect-square bg-white/5 border border-white/10"></div>
@@ -15,7 +15,7 @@ export default function Amenities() {
             </p>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="order-2 md:order-1">
             <h2 className="text-3xl font-serif mb-4 text-[var(--color-brand-accent)]">Infinity Pools</h2>

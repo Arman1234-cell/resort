@@ -7,9 +7,9 @@ export default function Rooms() {
       <p className="text-center text-[var(--color-brand-muted)] mb-16 max-w-xl mx-auto">
         Carefully designed spaces that blend modern luxury with breathtaking natural surroundings.
       </p>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Room Skeleton 1 */}
+        {/* Ocean Suite */}
         <div className="border border-white/5 bg-white/5 group">
           <div className="aspect-video bg-white/10 w-full"></div>
           <div className="p-8">
@@ -21,7 +21,7 @@ export default function Rooms() {
           </div>
         </div>
 
-        {/* Room Skeleton 2 */}
+        {/* Garden Villa */}
         <div className="border border-white/5 bg-white/5 group">
           <div className="aspect-video bg-white/10 w-full"></div>
           <div className="p-8">

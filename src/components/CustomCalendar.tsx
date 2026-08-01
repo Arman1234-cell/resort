@@ -21,7 +21,9 @@ export default function CustomCalendar({ checkIn, checkOut, onChange, unavailabl
 
   const prevMonth = () => {
     const now = new Date();
-    const isCurrentMonth = currentMonth.getFullYear() === now.getFullYear() && currentMonth.getMonth() === now.getMonth();
+    const isCurrentMonth =
+      currentMonth.getFullYear() === now.getFullYear() &&
+      currentMonth.getMonth() === now.getMonth();
     if (!isCurrentMonth) {
       setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
     }
@@ -41,7 +43,7 @@ export default function CustomCalendar({ checkIn, checkOut, onChange, unavailabl
         onChange(dateStr, dateStr);
         setSelecting('checkOut');
       } else {
-        // Ensure no unavailable dates in between
+        // Validate no unavailable dates fall within the range
         let valid = true;
         let d = new Date(checkIn);
         const end = new Date(dateStr);
@@ -53,7 +55,7 @@ export default function CustomCalendar({ checkIn, checkOut, onChange, unavailabl
           }
           d.setDate(d.getDate() + 1);
         }
-        
+
         if (valid) {
           onChange(checkIn, dateStr);
           setSelecting('checkIn');
@@ -69,7 +71,6 @@ export default function CustomCalendar({ checkIn, checkOut, onChange, unavailabl
   const renderCalendar = () => {
     const days = [];
     const today = new Date();
-    // Use local time formatting to avoid UTC shift
     const todayYear = today.getFullYear();
     const todayMonth = String(today.getMonth() + 1).padStart(2, '0');
     const todayDate = String(today.getDate()).padStart(2, '0');
@@ -85,7 +86,7 @@ export default function CustomCalendar({ checkIn, checkOut, onChange, unavailabl
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       const dateStr = `${year}-${month}-${day}`;
-      
+
       const isPast = dateStr < todayStr;
       const isUnavailable = unavailableDates.includes(dateStr);
       const isCheckIn = dateStr === checkIn;
@@ -94,11 +95,12 @@ export default function CustomCalendar({ checkIn, checkOut, onChange, unavailabl
       const disabled = isPast || isUnavailable;
 
       let bg = 'bg-neutral-900';
-      let text = 'text-neutral-300';
       let hover = 'hover:bg-neutral-800 cursor-pointer';
 
       if (disabled) {
-        bg = isUnavailable ? 'bg-red-950/40 text-red-500/50 line-through' : 'bg-neutral-950/50 text-neutral-600';
+        bg = isUnavailable
+          ? 'bg-red-950/40 text-red-500/50 line-through'
+          : 'bg-neutral-950/50 text-neutral-600';
         hover = 'cursor-not-allowed';
       } else if (isCheckIn || isCheckOut) {
         bg = 'bg-white text-black font-bold';
@@ -123,7 +125,10 @@ export default function CustomCalendar({ checkIn, checkOut, onChange, unavailabl
     return days;
   };
 
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
 
   return (
     <div className="bg-neutral-950 border border-neutral-900 p-4 rounded-xs select-none">
@@ -140,7 +145,7 @@ export default function CustomCalendar({ checkIn, checkOut, onChange, unavailabl
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
+        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((d) => (
           <div key={d} className="w-8 text-center text-[10px] font-mono text-neutral-500">
             {d}
           </div>
@@ -150,7 +155,7 @@ export default function CustomCalendar({ checkIn, checkOut, onChange, unavailabl
       <div className="grid grid-cols-7 gap-1">
         {renderCalendar()}
       </div>
-      
+
       <div className="mt-4 flex gap-4 text-[10px] font-mono text-neutral-500">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 bg-red-950/40 border border-red-900/50 rounded-sm"></div> Sold Out

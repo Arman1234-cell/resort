@@ -5,10 +5,10 @@ export default function HeroFourBento() {
 
   return (
     <section id="hero-4" className="min-h-screen py-24 px-6 lg:px-12 bg-neutral-950 border-t border-neutral-900 select-none">
-      
+
       <div className="max-w-7xl mx-auto w-full">
-        
-        {/* Section Title Header */}
+
+        {/* Section Header */}
         <div className="mb-12">
           <div className="flex items-center gap-2 mb-2">
             <span className="font-mono text-xs tracking-widest text-neutral-500 uppercase">
@@ -23,8 +23,8 @@ export default function HeroFourBento() {
 
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8">
-          
-          {/* Card 1: Stat / Feature Label Block (Col span: 4) */}
+
+          {/* Card 1: Stat block (col span 4) */}
           <div className={`md:col-span-4 p-8 flex flex-col justify-between min-h-[250px] transition-all duration-300 ${containerBorder}`}>
             <div>
               <span className="font-mono text-[10px] tracking-widest text-neutral-500 uppercase">
@@ -45,38 +45,37 @@ export default function HeroFourBento() {
             </div>
           </div>
 
-          {/* Card 2: Massive Landscape Media (Col span: 8) */}
+          {/* Card 2: Landscape image (col span 8) */}
           <div className={`md:col-span-8 aspect-[16/8] rounded-xs overflow-hidden transition-all duration-300 ${containerBorder} relative group`}>
-            <img 
-              src="/assets/hero4_terrace.png" 
-              alt="Terrace Landscape View" 
-              className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-102 transition-transform duration-700 ease-out" 
+            <img
+              src="/assets/hero-balcony-sunset.png"
+              alt="Terrace Landscape View"
+              className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-102 transition-transform duration-700 ease-out"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/50 to-transparent pointer-events-none" />
           </div>
 
-          {/* Card 3: Tall Vertical Media Slot (Col span: 6) */}
+          {/* Card 3: Tall vertical image (col span 6) */}
           <div className={`md:col-span-6 aspect-[4/3] md:aspect-[3/4] rounded-xs overflow-hidden transition-all duration-300 ${containerBorder} relative group`}>
-            <img 
-              src="/assets/hero4_glazing.png" 
-              alt="Architectural Glazing Detail" 
-              className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-103 transition-transform duration-700 ease-out" 
+            <img
+              src="/assets/hero4_glazing.png"
+              alt="Architectural Glazing Detail"
+              className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-103 transition-transform duration-700 ease-out"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/40 to-transparent pointer-events-none" />
           </div>
 
-          {/* Card 4: Fine Detailed List & Action Card (Col span: 6) */}
+          {/* Card 4: Specifications list (col span 6) */}
           <div className={`md:col-span-6 p-8 lg:p-12 flex flex-col justify-between transition-all duration-300 ${containerBorder}`}>
             <div>
               <span className="font-mono text-[10px] tracking-widest text-neutral-500 uppercase">
                 04-D / SPECIFICATIONS
               </span>
-              
+
               <h3 className="font-serif text-2xl lg:text-3xl font-light text-white tracking-tight mt-4 mb-6">
                 Architectural Details
               </h3>
 
-              {/* Minimal Line items */}
               <div className="space-y-4">
                 {[
                   { label: '01 / STRUCTURE', desc: 'Exposed concrete and hot-dip galvanized steel.' },
@@ -99,7 +98,7 @@ export default function HeroFourBento() {
               <p className="font-sans text-neutral-500 text-[11px] leading-relaxed mb-4">
                 * All woods used are sourced from sustainable, European forestry and are sealed to withstand sea-water.
               </p>
-              
+
               <button className="px-6 py-3 bg-white text-neutral-950 font-display text-[10px] tracking-widest uppercase hover:bg-neutral-200 transition-colors w-full cursor-pointer">
                 DOWNLOAD TECHNICAL SPECIFICATIONS
               </button>

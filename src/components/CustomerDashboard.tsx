@@ -21,58 +21,62 @@ export default function CustomerDashboard({ onClose }: { onClose: () => void }) 
   useEffect(() => {
     if (user?.email) {
       fetch('/api/bookings')
-        .then(res => res.json())
+        .then((res) => res.json())
         .then((data: Booking[]) => {
-          const userBookings = (data as any[]).filter(b => b.email === user.email);
+          const userBookings = (data as any[]).filter((b) => b.email === user.email);
           setBookings(userBookings);
         })
-        .catch(err => console.error(err))
+        .catch((err) => console.error(err))
         .finally(() => setLoading(false));
     }
   }, [user]);
 
   const downloadReceipt = (booking: Booking) => {
     const doc = new jsPDF();
-    
-    // Add header
+
+    // Header block
     doc.setFillColor(3, 3, 3);
     doc.rect(0, 0, 210, 40, 'F');
-    
+
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
-    doc.text("GREEN COAST RESORT", 20, 25);
-    
+    doc.text('GREEN COAST RESORT', 20, 25);
+
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text("Booking Receipt", 20, 60);
-    
+    doc.text('Booking Receipt', 20, 60);
+
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(12);
     doc.text(`Booking Reference: ${booking.id}`, 20, 80);
     doc.text(`Guest Name: ${user?.name || 'Guest'}`, 20, 90);
     doc.text(`Guest Email: ${user?.email || 'N/A'}`, 20, 100);
-    
+
     doc.text(`Room: ${booking.roomName}`, 20, 120);
     doc.text(`Check-in: ${booking.checkIn}`, 20, 130);
     doc.text(`Check-out: ${booking.checkOut}`, 20, 140);
-    
+
     doc.setFont('helvetica', 'bold');
     doc.text(`Total Amount Paid: Rs. ${booking.amount}`, 20, 160);
-    
+
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
-    doc.text("Thank you for choosing Green Coast Resort. We look forward to hosting you.", 20, 180);
-    
+    doc.text(
+      'Thank you for choosing Green Coast Resort. We look forward to hosting you.',
+      20,
+      180
+    );
+
     doc.save(`GreenCoast_Receipt_${booking.id}.pdf`);
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-12 animate-in fade-in duration-300">
       <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={onClose} />
-      
+
       <div className="relative w-full max-w-4xl bg-[#030303] border border-neutral-900 rounded-sm shadow-2xl flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between p-6 border-b border-neutral-900">
           <div>
@@ -98,8 +102,10 @@ export default function CustomerDashboard({ onClose }: { onClose: () => void }) 
             <div className="text-center py-16">
               <Calendar className="w-12 h-12 text-neutral-800 mx-auto mb-4" />
               <h3 className="text-neutral-300 font-serif text-lg">No Bookings Yet</h3>
-              <p className="text-neutral-500 text-xs mt-2 font-sans">You have not made any bookings at Green Coast Resort.</p>
-              <button 
+              <p className="text-neutral-500 text-xs mt-2 font-sans">
+                You have not made any bookings at Green Coast Resort.
+              </p>
+              <button
                 onClick={onClose}
                 className="mt-6 px-6 py-2 bg-white text-black text-[10px] uppercase tracking-widest font-semibold hover:bg-neutral-200 transition-colors"
               >
@@ -109,13 +115,18 @@ export default function CustomerDashboard({ onClose }: { onClose: () => void }) 
           ) : (
             <div className="grid gap-4">
               {bookings.map((booking) => (
-                <div key={booking.id} className="bg-neutral-950 border border-neutral-900 p-4 lg:p-6 flex flex-col md:flex-row justify-between gap-4">
+                <div
+                  key={booking.id}
+                  className="bg-neutral-950 border border-neutral-900 p-4 lg:p-6 flex flex-col md:flex-row justify-between gap-4"
+                >
                   <div>
                     <h3 className="text-white font-serif text-lg mb-2">{booking.roomName}</h3>
                     <div className="flex flex-col gap-2 text-xs text-neutral-400 font-sans">
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-neutral-500" />
-                        <span>Check-in: {booking.checkIn} | Check-out: {booking.checkOut}</span>
+                        <span>
+                          Check-in: {booking.checkIn} | Check-out: {booking.checkOut}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <CreditCard className="w-4 h-4 text-neutral-500" />

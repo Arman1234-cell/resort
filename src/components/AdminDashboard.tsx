@@ -62,13 +62,13 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'dashboard' | 'pricing' | 'marketing'>('dashboard');
 
-  // Pricing State
+  // Pricing state
   const [pricingDate, setPricingDate] = useState('');
   const [pricingRoom, setPricingRoom] = useState(ROOMS[0].name);
   const [pricingAmount, setPricingAmount] = useState('');
   const [pricingStatus, setPricingStatus] = useState('');
 
-  // Marketing State
+  // Marketing state
   const [marketingMessage, setMarketingMessage] = useState('');
   const [marketingStatus, setMarketingStatus] = useState('');
 
@@ -111,7 +111,7 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
     }
   };
 
-  // Close the modal automatically if a normal user logs in from here.
+  // Close automatically if non-admin logs in here
   useEffect(() => {
     if (user && !user.isAdmin) {
       onClose();
@@ -179,8 +179,8 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
     const roomBookings = bookings.filter((b) => b.roomName === room.name);
     const revenue = roomBookings.reduce((sum, b) => sum + Number(b.amount || 0), 0);
     return { name: room.name, value: roomBookings.length, revenue };
-  }).filter(d => d.value > 0);
-  
+  }).filter((d) => d.value > 0);
+
   if (chartData.length === 0) {
     chartData.push({ name: 'No Bookings', value: 1, revenue: 0 });
   }
@@ -193,7 +193,7 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      const dayBookings = bookings.filter(b => isSameDate(new Date(b.timestamp), d));
+      const dayBookings = bookings.filter((b) => isSameDate(new Date(b.timestamp), d));
       const revenue = dayBookings.reduce((sum, b) => sum + Number(b.amount || 0), 0);
       data.push({ date: dateStr, revenue });
     }
@@ -214,6 +214,7 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
     );
   });
 
+  // Login gate for non-admin
   if (!isLoggedIn) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#030303] text-neutral-200 p-6">
@@ -322,264 +323,264 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
         {activeTab === 'dashboard' && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 stagger-1">
             <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-5 border border-neutral-900 bg-neutral-950 p-6 rounded-xs">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
-                  Today
-                </span>
-                <h2 className="font-serif text-4xl text-white font-medium mt-2">
-                  {metrics.todaysBookings} bookings
-                </h2>
-                <p className="text-xs text-neutral-500 mt-2">
-                  {formatInr(metrics.todaysRevenue)} collected from bookings created today.
-                </p>
-              </div>
-              <div className="p-3 bg-green-950/30 border border-green-900/40 rounded-xs">
-                <Sparkles className="w-5 h-5 text-green-300" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3 mt-6">
-              <div className="border border-neutral-900 bg-neutral-900/30 p-3 rounded-xs">
-                <span className="font-mono text-[8px] text-neutral-500 uppercase">In House</span>
-                <strong className="block text-xl text-white mt-1">{metrics.inHouseGuests}</strong>
-              </div>
-              <div className="border border-neutral-900 bg-neutral-900/30 p-3 rounded-xs">
-                <span className="font-mono text-[8px] text-neutral-500 uppercase">Upcoming</span>
-                <strong className="block text-xl text-white mt-1">{metrics.upcomingCheckIns}</strong>
-              </div>
-              <div className="border border-neutral-900 bg-neutral-900/30 p-3 rounded-xs">
-                <span className="font-mono text-[8px] text-neutral-500 uppercase">Occupancy</span>
-                <strong className="block text-xl text-white mt-1">{metrics.occupancyRate}%</strong>
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {[
-              { label: 'Total Revenue', value: formatInr(metrics.totalRevenue), icon: IndianRupee },
-              { label: 'Total Bookings', value: metrics.totalBookings.toString(), icon: Calendar },
-              { label: 'Guests Recorded', value: bookings.length.toString(), icon: Users },
-              { label: 'Top Room', value: metrics.mostPopularRoom, icon: TrendingUp }
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <div key={item.label} className="bg-neutral-950 border border-neutral-900 p-5 rounded-xs flex items-center justify-between gap-4">
-                  <div className="min-w-0">
-                    <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest block">
-                      {item.label}
+              <div className="lg:col-span-5 border border-neutral-900 bg-neutral-950 p-6 rounded-xs">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
+                      Today
                     </span>
-                    <div className="text-xl font-mono text-white font-semibold mt-2 truncate">
-                      {item.value}
-                    </div>
+                    <h2 className="font-serif text-4xl text-white font-medium mt-2">
+                      {metrics.todaysBookings} bookings
+                    </h2>
+                    <p className="text-xs text-neutral-500 mt-2">
+                      {formatInr(metrics.todaysRevenue)} collected from bookings created today.
+                    </p>
                   </div>
-                  <div className="p-3 bg-neutral-900 border border-neutral-850 rounded-xs">
-                    <Icon className="w-5 h-5 text-neutral-400" />
+                  <div className="p-3 bg-green-950/30 border border-green-900/40 rounded-xs">
+                    <Sparkles className="w-5 h-5 text-green-300" />
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-8 bg-neutral-950 border border-neutral-900 p-6 rounded-xs">
-            <div className="flex items-center justify-between gap-4 mb-6">
-              <div>
-                <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
-                  Revenue Analytics
-                </span>
-                <h3 className="font-serif text-base text-white font-medium mt-1">
-                  Last 7 Days Revenue
-                </h3>
-              </div>
-            </div>
-
-            <div className="w-full h-64 mt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={last7DaysData}>
-                  <XAxis dataKey="date" stroke="#525252" fontSize={10} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#525252" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(val) => `₹${val}`} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#0a0a0a', borderColor: '#262626', color: '#fff', fontSize: '12px' }}
-                    itemStyle={{ color: '#4ade80' }}
-                    formatter={(value: number) => [formatInr(value), 'Revenue']}
-                  />
-                  <Line type="monotone" dataKey="revenue" stroke="#4ade80" strokeWidth={2} dot={{ fill: '#4ade80', r: 4 }} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="lg:col-span-4 bg-neutral-950 border border-neutral-900 p-6 rounded-xs flex flex-col">
-            <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
-              Room Popularity
-            </span>
-            <h3 className="font-serif text-base text-white font-medium mt-1 mb-2">
-              Bookings by Room
-            </h3>
-
-            <div className="flex-grow flex flex-col items-center justify-center min-h-[200px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#0a0a0a', borderColor: '#262626', color: '#fff', fontSize: '12px', borderRadius: '4px' }}
-                    itemStyle={{ color: '#fff' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex flex-wrap justify-center gap-3 mt-4">
-                {chartData.map((entry, index) => (
-                  <div key={entry.name} className="flex items-center gap-1.5 text-[10px] text-neutral-400">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }} />
-                    {entry.name}
+                <div className="grid grid-cols-3 gap-3 mt-6">
+                  <div className="border border-neutral-900 bg-neutral-900/30 p-3 rounded-xs">
+                    <span className="font-mono text-[8px] text-neutral-500 uppercase">In House</span>
+                    <strong className="block text-xl text-white mt-1">{metrics.inHouseGuests}</strong>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="grid grid-cols-1 lg:grid-cols-1 gap-8">
-          <div className="bg-neutral-950 border border-neutral-900 p-6 rounded-xs">
-            <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
-              Latest Activity
-            </span>
-            <h3 className="font-serif text-base text-white font-medium mt-1 mb-5">
-              Recent bookings
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {recentBookings.length === 0 ? (
-                <p className="text-xs text-neutral-500 border border-dashed border-neutral-900 p-5 text-center">
-                  No recent booking activity.
-                </p>
-              ) : (
-                recentBookings.map((booking) => (
-                  <div key={booking.id} className="border border-neutral-900 bg-neutral-900/20 p-3 rounded-xs">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm text-white font-medium truncate">{booking.name}</span>
-                      <span className="font-mono text-[9px] text-green-400">{booking.status}</span>
-                    </div>
-                    <div className="text-[10px] text-neutral-500 mt-1">
-                      {booking.roomName} - {formatInr(booking.amount)}
-                    </div>
-                    <div className="text-[10px] text-neutral-600 mt-1">
-                      {formatDate(booking.checkIn)} to {formatDate(booking.checkOut)}
-                    </div>
+                  <div className="border border-neutral-900 bg-neutral-900/30 p-3 rounded-xs">
+                    <span className="font-mono text-[8px] text-neutral-500 uppercase">Upcoming</span>
+                    <strong className="block text-xl text-white mt-1">{metrics.upcomingCheckIns}</strong>
                   </div>
-                ))
-              )}
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-neutral-950 border border-neutral-900 p-6 rounded-xs space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
-                Booking Ledger
-              </span>
-              <h3 className="font-serif text-base text-white font-medium mt-1">
-                Guest reservations
-              </h3>
-            </div>
-
-            <div className="relative max-w-sm w-full">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-3.5 w-3.5 text-neutral-500" />
+                  <div className="border border-neutral-900 bg-neutral-900/30 p-3 rounded-xs">
+                    <span className="font-mono text-[8px] text-neutral-500 uppercase">Occupancy</span>
+                    <strong className="block text-xl text-white mt-1">{metrics.occupancyRate}%</strong>
+                  </div>
+                </div>
               </div>
-              <input
-                type="text"
-                placeholder="Search guest, email, room, ID..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-850 pl-9 pr-3 py-2 rounded-xs text-xs font-sans text-neutral-100 outline-hidden focus:border-neutral-500"
-              />
-            </div>
-          </div>
 
-          <div className="overflow-x-auto">
-            {filteredBookings.length === 0 ? (
-              <div className="text-center py-12 border border-dashed border-neutral-900">
-                <p className="font-sans text-xs text-neutral-500">
-                  {searchTerm ? 'No search results match your criteria.' : 'No bookings recorded yet.'}
-                </p>
-              </div>
-            ) : (
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-neutral-900 text-neutral-500 uppercase font-mono text-[9px] tracking-wider">
-                    <th className="py-3 px-4 font-normal">Booking ID</th>
-                    <th className="py-3 px-4 font-normal">Guest</th>
-                    <th className="py-3 px-4 font-normal">Room</th>
-                    <th className="py-3 px-4 font-normal">Stay</th>
-                    <th className="py-3 px-4 font-normal text-right">Amount</th>
-                    <th className="py-3 px-4 font-normal text-center">Payment</th>
-                    <th className="py-3 px-4 font-normal text-center">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-900 text-neutral-300 font-sans">
-                  {filteredBookings.map((b) => (
-                    <tr key={b.id} className="hover:bg-neutral-900/20 transition-colors">
-                      <td className="py-4 px-4 font-mono text-neutral-400 font-semibold">{b.id}</td>
-                      <td className="py-4 px-4 space-y-0.5">
-                        <div className="font-medium text-white">{b.name}</div>
-                        <div className="text-neutral-500 text-[10px]">{b.email}</div>
-                        <div className="text-neutral-500 text-[10px]">WA: {b.whatsapp}</div>
-                      </td>
-                      <td className="py-4 px-4 space-y-0.5">
-                        <div>{b.roomName}</div>
-                        <div className="text-neutral-500 text-[10px]">
-                          {b.nights} {b.nights === 1 ? 'night' : 'nights'}
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 font-mono text-[10px] text-neutral-400">
-                        {formatDate(b.checkIn)} <span className="text-neutral-600">to</span> {formatDate(b.checkOut)}
-                      </td>
-                      <td className="py-4 px-4 text-right font-mono text-white font-medium">
-                        {formatInr(b.amount)}
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] bg-green-950/40 text-green-400 border border-green-900/50 font-mono font-medium">
-                          <CheckCircle className="w-3 h-3" />
-                          {b.gateway || b.status}
+              <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {[
+                  { label: 'Total Revenue', value: formatInr(metrics.totalRevenue), icon: IndianRupee },
+                  { label: 'Total Bookings', value: metrics.totalBookings.toString(), icon: Calendar },
+                  { label: 'Guests Recorded', value: bookings.length.toString(), icon: Users },
+                  { label: 'Top Room', value: metrics.mostPopularRoom, icon: TrendingUp }
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={item.label} className="bg-neutral-950 border border-neutral-900 p-5 rounded-xs flex items-center justify-between gap-4">
+                      <div className="min-w-0">
+                        <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest block">
+                          {item.label}
                         </span>
-                        {b.transactionId && (
-                          <div className="font-mono text-[9px] text-neutral-500 mt-1">{b.transactionId}</div>
-                        )}
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        <button
-                          onClick={() => handleCancelBooking(b.id)}
-                          className="p-1.5 text-neutral-500 hover:text-red-400 hover:bg-neutral-900 transition-colors cursor-pointer rounded-xs bg-transparent border-0"
-                          title="Cancel Booking"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </section>
+                        <div className="text-xl font-mono text-white font-semibold mt-2 truncate">
+                          {item.value}
+                        </div>
+                      </div>
+                      <div className="p-3 bg-neutral-900 border border-neutral-850 rounded-xs">
+                        <Icon className="w-5 h-5 text-neutral-400" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-8 bg-neutral-950 border border-neutral-900 p-6 rounded-xs">
+                <div className="flex items-center justify-between gap-4 mb-6">
+                  <div>
+                    <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
+                      Revenue Analytics
+                    </span>
+                    <h3 className="font-serif text-base text-white font-medium mt-1">
+                      Last 7 Days Revenue
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="w-full h-64 mt-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={last7DaysData}>
+                      <XAxis dataKey="date" stroke="#525252" fontSize={10} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#525252" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(val) => `₹${val}`} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#0a0a0a', borderColor: '#262626', color: '#fff', fontSize: '12px' }}
+                        itemStyle={{ color: '#4ade80' }}
+                        formatter={(value: number) => [formatInr(value), 'Revenue']}
+                      />
+                      <Line type="monotone" dataKey="revenue" stroke="#4ade80" strokeWidth={2} dot={{ fill: '#4ade80', r: 4 }} activeDot={{ r: 6 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="lg:col-span-4 bg-neutral-950 border border-neutral-900 p-6 rounded-xs flex flex-col">
+                <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
+                  Room Popularity
+                </span>
+                <h3 className="font-serif text-base text-white font-medium mt-1 mb-2">
+                  Bookings by Room
+                </h3>
+
+                <div className="flex-grow flex flex-col items-center justify-center min-h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#0a0a0a', borderColor: '#262626', color: '#fff', fontSize: '12px', borderRadius: '4px' }}
+                        itemStyle={{ color: '#fff' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="flex flex-wrap justify-center gap-3 mt-4">
+                    {chartData.map((entry, index) => (
+                      <div key={entry.name} className="flex items-center gap-1.5 text-[10px] text-neutral-400">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }} />
+                        {entry.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+              <div className="bg-neutral-950 border border-neutral-900 p-6 rounded-xs">
+                <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
+                  Latest Activity
+                </span>
+                <h3 className="font-serif text-base text-white font-medium mt-1 mb-5">
+                  Recent bookings
+                </h3>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {recentBookings.length === 0 ? (
+                    <p className="text-xs text-neutral-500 border border-dashed border-neutral-900 p-5 text-center">
+                      No recent booking activity.
+                    </p>
+                  ) : (
+                    recentBookings.map((booking) => (
+                      <div key={booking.id} className="border border-neutral-900 bg-neutral-900/20 p-3 rounded-xs">
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-sm text-white font-medium truncate">{booking.name}</span>
+                          <span className="font-mono text-[9px] text-green-400">{booking.status}</span>
+                        </div>
+                        <div className="text-[10px] text-neutral-500 mt-1">
+                          {booking.roomName} - {formatInr(booking.amount)}
+                        </div>
+                        <div className="text-[10px] text-neutral-600 mt-1">
+                          {formatDate(booking.checkIn)} to {formatDate(booking.checkOut)}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </section>
+
+            <section className="bg-neutral-950 border border-neutral-900 p-6 rounded-xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">
+                    Booking Ledger
+                  </span>
+                  <h3 className="font-serif text-base text-white font-medium mt-1">
+                    Guest reservations
+                  </h3>
+                </div>
+
+                <div className="relative max-w-sm w-full">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-3.5 w-3.5 text-neutral-500" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search guest, email, room, ID..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-neutral-900 border border-neutral-850 pl-9 pr-3 py-2 rounded-xs text-xs font-sans text-neutral-100 outline-hidden focus:border-neutral-500"
+                  />
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                {filteredBookings.length === 0 ? (
+                  <div className="text-center py-12 border border-dashed border-neutral-900">
+                    <p className="font-sans text-xs text-neutral-500">
+                      {searchTerm ? 'No search results match your criteria.' : 'No bookings recorded yet.'}
+                    </p>
+                  </div>
+                ) : (
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-neutral-900 text-neutral-500 uppercase font-mono text-[9px] tracking-wider">
+                        <th className="py-3 px-4 font-normal">Booking ID</th>
+                        <th className="py-3 px-4 font-normal">Guest</th>
+                        <th className="py-3 px-4 font-normal">Room</th>
+                        <th className="py-3 px-4 font-normal">Stay</th>
+                        <th className="py-3 px-4 font-normal text-right">Amount</th>
+                        <th className="py-3 px-4 font-normal text-center">Payment</th>
+                        <th className="py-3 px-4 font-normal text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-neutral-900 text-neutral-300 font-sans">
+                      {filteredBookings.map((b) => (
+                        <tr key={b.id} className="hover:bg-neutral-900/20 transition-colors">
+                          <td className="py-4 px-4 font-mono text-neutral-400 font-semibold">{b.id}</td>
+                          <td className="py-4 px-4 space-y-0.5">
+                            <div className="font-medium text-white">{b.name}</div>
+                            <div className="text-neutral-500 text-[10px]">{b.email}</div>
+                            <div className="text-neutral-500 text-[10px]">WA: {b.whatsapp}</div>
+                          </td>
+                          <td className="py-4 px-4 space-y-0.5">
+                            <div>{b.roomName}</div>
+                            <div className="text-neutral-500 text-[10px]">
+                              {b.nights} {b.nights === 1 ? 'night' : 'nights'}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 font-mono text-[10px] text-neutral-400">
+                            {formatDate(b.checkIn)} <span className="text-neutral-600">to</span> {formatDate(b.checkOut)}
+                          </td>
+                          <td className="py-4 px-4 text-right font-mono text-white font-medium">
+                            {formatInr(b.amount)}
+                          </td>
+                          <td className="py-4 px-4 text-center">
+                            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] bg-green-950/40 text-green-400 border border-green-900/50 font-mono font-medium">
+                              <CheckCircle className="w-3 h-3" />
+                              {b.gateway || b.status}
+                            </span>
+                            {b.transactionId && (
+                              <div className="font-mono text-[9px] text-neutral-500 mt-1">{b.transactionId}</div>
+                            )}
+                          </td>
+                          <td className="py-4 px-4 text-center">
+                            <button
+                              onClick={() => handleCancelBooking(b.id)}
+                              className="p-1.5 text-neutral-500 hover:text-red-400 hover:bg-neutral-900 transition-colors cursor-pointer rounded-xs bg-transparent border-0"
+                              title="Cancel Booking"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </section>
           </div>
         )}
 
@@ -599,19 +600,19 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
               <div className="space-y-4">
                 <div>
                   <label className="block text-[10px] text-neutral-500 font-mono uppercase mb-2">Room Type</label>
-                  <select 
+                  <select
                     value={pricingRoom}
                     onChange={(e) => setPricingRoom(e.target.value)}
                     className="w-full bg-neutral-900 border border-neutral-800 p-3 text-white text-xs font-sans outline-hidden"
                   >
-                    {ROOMS.map(r => (
+                    {ROOMS.map((r) => (
                       <option key={r.name} value={r.name}>{r.name}</option>
                     ))}
                   </select>
                 </div>
                 <div>
                   <label className="block text-[10px] text-neutral-500 font-mono uppercase mb-2">Target Date</label>
-                  <input 
+                  <input
                     type="date"
                     value={pricingDate}
                     onChange={(e) => setPricingDate(e.target.value)}
@@ -620,7 +621,7 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
                 </div>
                 <div>
                   <label className="block text-[10px] text-neutral-500 font-mono uppercase mb-2">New Price (INR)</label>
-                  <input 
+                  <input
                     type="number"
                     value={pricingAmount}
                     onChange={(e) => setPricingAmount(e.target.value)}
@@ -658,7 +659,7 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
               <div className="space-y-4">
                 <div>
                   <label className="block text-[10px] text-neutral-500 font-mono uppercase mb-2">Message Content</label>
-                  <textarea 
+                  <textarea
                     value={marketingMessage}
                     onChange={(e) => setMarketingMessage(e.target.value)}
                     rows={6}
@@ -666,7 +667,7 @@ export default function AdminDashboard({ onClose }: AdminDashboardProps) {
                     className="w-full bg-neutral-900 border border-neutral-800 p-3 text-white text-xs font-sans outline-hidden"
                   ></textarea>
                 </div>
-                
+
                 <button
                   onClick={handleSendMarketing}
                   className="w-full bg-white text-black font-semibold text-[10px] uppercase tracking-widest py-3 hover:bg-neutral-200 transition-colors"

@@ -25,10 +25,10 @@ const FAQ_DATABASE: Record<string, string> = {
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { 
-      id: '1', 
-      type: 'bot', 
-      text: 'Hello! I am your Resort Concierge. You can ask me about our location, prices, pool, food, wifi, pets, check in times, or how to book a room!' 
+    {
+      id: '1',
+      type: 'bot',
+      text: 'Hello! I am your Resort Concierge. You can ask me about our location, prices, pool, food, wifi, pets, check in times, or how to book a room!'
     }
   ]);
   const [inputValue, setInputValue] = useState('');
@@ -50,14 +50,14 @@ export default function Chatbot() {
 
     const userText = inputValue.trim();
     const newUserMsg: Message = { id: Date.now().toString(), type: 'user', text: userText };
-    setMessages(prev => [...prev, newUserMsg]);
+    setMessages((prev) => [...prev, newUserMsg]);
     setInputValue('');
     setIsTyping(true);
 
-    // AI Logic (Simple rule-based)
+    // Simple rule-based FAQ matching
     setTimeout(() => {
       let botResponse = "I'm sorry, I don't understand that question yet. Please contact our front desk at +91 98765 43210 for more details!";
-      
+
       const lowerInput = userText.toLowerCase();
       for (const [key, answer] of Object.entries(FAQ_DATABASE)) {
         if (lowerInput.includes(key)) {
@@ -66,14 +66,14 @@ export default function Chatbot() {
         }
       }
 
-      setMessages(prev => [...prev, { id: Date.now().toString(), type: 'bot', text: botResponse }]);
+      setMessages((prev) => [...prev, { id: Date.now().toString(), type: 'bot', text: botResponse }]);
       setIsTyping(false);
     }, 1000);
   };
 
   return (
     <div className="fixed bottom-6 right-6 z-[60]">
-      {/* Chat Bubble Button */}
+      {/* Floating chat bubble */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -84,7 +84,7 @@ export default function Chatbot() {
         </button>
       )}
 
-      {/* Chat Window */}
+      {/* Chat window */}
       {isOpen && (
         <div className="w-80 sm:w-96 h-[500px] max-h-[80vh] bg-neutral-950 border border-neutral-900 rounded-lg shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
@@ -136,7 +136,7 @@ export default function Chatbot() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Area */}
+          {/* Input */}
           <div className="p-4 bg-neutral-900 border-t border-neutral-800">
             <form
               onSubmit={(e) => {

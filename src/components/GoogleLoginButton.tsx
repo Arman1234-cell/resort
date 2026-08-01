@@ -3,7 +3,11 @@ import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 
-export default function GoogleLoginButton() {
+interface GoogleLoginButtonProps {
+  onSuccess?: (user: { name: string; email: string }) => void;
+}
+
+export default function GoogleLoginButton({ onSuccess }: GoogleLoginButtonProps = {}) {
   const { login } = useAuth();
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -11,13 +15,11 @@ export default function GoogleLoginButton() {
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     setStatus('loading');
     setErrorMessage('');
-    
+
     try {
       const response = await fetch('/api/auth/google', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credential: credentialResponse.credential })
       });
 
@@ -26,6 +28,9 @@ export default function GoogleLoginButton() {
       if (response.ok && data.success) {
         setStatus('success');
         login(data.user);
+        if (onSuccess) {
+          onSuccess({ name: data.user.name, email: data.user.email });
+        }
       } else {
         setStatus('error');
         setErrorMessage(data.message || 'Authentication failed on server.');
@@ -74,7 +79,7 @@ export default function GoogleLoginButton() {
           </p>
         </div>
       )}
-      
+
       <div className="flex justify-center w-full">
         <GoogleLogin
           onSuccess={handleSuccess}

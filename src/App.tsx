@@ -54,7 +54,7 @@ function AppContent() {
     setCurrentSection(id);
   };
 
-  // Global Lenis smooth scrolling
+  // Global smooth scrolling via Lenis + GSAP
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,

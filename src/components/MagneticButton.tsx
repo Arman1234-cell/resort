@@ -11,7 +11,7 @@ export default function MagneticButton({ children, className = '', strength = 30
   const magneticRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Only run on fine-pointer devices
+    // Only enable on pointer-fine devices (desktop with mouse)
     if (!window.matchMedia('(pointer: fine)').matches) return;
 
     const el = magneticRef.current;
@@ -19,11 +19,11 @@ export default function MagneticButton({ children, className = '', strength = 30
 
     const onMouseMove = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect();
-      const hX = rect.left + rect.width / 2;
-      const hY = rect.top + rect.height / 2;
-      
-      const distanceX = e.clientX - hX;
-      const distanceY = e.clientY - hY;
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const distanceX = e.clientX - centerX;
+      const distanceY = e.clientY - centerY;
 
       gsap.to(el, {
         x: (distanceX / rect.width) * strength,
