@@ -93,7 +93,7 @@ An intuitive reservation flow featuring live availability, dynamic date picking,
 Enterprise-grade financial transactions. Fully encrypted checkout process providing secure payments, instant booking confirmation, and automated digital payment receipts.
 
 <p align="center">
-  <img src="images/payment.png" width="100%" alt="Payment Gateway" />
+  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/760da8e55b5f15f7b04392bd75959b3e46192542/ChatGPT%20Image%20Aug%201%2C%202026%2C%2007_08_55%20PM.png" width="100%" alt="Payment Gateway" />
 </p>
 
 <br />
