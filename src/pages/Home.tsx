@@ -83,17 +83,17 @@ export default function Home({ onBookNow }: HomeProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10 z-0" />
 
         {/* Main Hero Content */}
-        <div className="relative h-full flex flex-col justify-between px-5 sm:px-8 md:px-12 pt-28 sm:pt-32 pb-10 sm:pb-12 z-10 max-w-[1440px] mx-auto w-full">
+        <div className="relative h-full flex flex-col justify-between px-8 sm:px-10 md:px-12 pt-28 sm:pt-32 pb-10 sm:pb-12 z-10 max-w-[1440px] mx-auto w-full">
 
           {/* Headline and description */}
-          <div className="flex flex-col gap-3 mt-8 sm:mt-12 md:mt-24 max-w-2xl text-left">
-            <span className="text-[10px] md:text-xs tracking-[0.3em] text-white/60 uppercase font-light">
+          <div className="flex flex-col gap-2 sm:gap-4 my-auto max-w-[75%] sm:max-w-xl md:max-w-2xl text-left">
+            <span className="text-[9px] md:text-[10px] tracking-[0.25em] text-white/60 uppercase font-light mb-1">
               HERO SECTION {slides[activeIdx].id} / PERSPECTIVE
             </span>
-            <h1 className="text-4xl sm:text-5xl md:text-8xl font-serif mt-2 text-white font-normal tracking-wide transition-all duration-500 leading-[1.1]">
+            <h1 className="text-[clamp(2.5rem,8vw,5.5rem)] font-serif text-white font-normal tracking-wide transition-all duration-500 leading-[1.05]">
               {slides[activeIdx].heading}
             </h1>
-            <p className="text-sm md:text-base text-white/70 font-sans max-w-md mt-4 sm:mt-6 leading-relaxed font-light">
+            <p className="text-[clamp(0.85rem,3vw,1rem)] text-white/70 font-sans max-w-md mt-2 sm:mt-4 leading-relaxed font-light">
               {slides[activeIdx].description}
             </p>
           </div>
@@ -134,7 +134,7 @@ export default function Home({ onBookNow }: HomeProps) {
                     }`}>
                       {slide.id}
                     </span>
-                    <span className={`text-[9px] sm:text-[10px] md:text-xs font-sans tracking-widest uppercase font-semibold mt-1 transition-colors duration-300 ${
+                    <span className={`hidden sm:block text-[9px] sm:text-[10px] md:text-xs font-sans tracking-widest uppercase font-semibold mt-1 transition-colors duration-300 ${
                       idx === activeIdx ? 'text-white' : 'text-white/40 group-hover:text-white'
                     }`}>
                       {slide.label}

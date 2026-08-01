@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MagneticButton from './MagneticButton';
@@ -8,6 +8,18 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function HeroTwo() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const checkWidth = () => {
+      const isLargeScreen = window.innerWidth > 1024;
+      const isMouseDevice = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      setIsDesktop(isLargeScreen && isMouseDevice);
+    };
+    checkWidth();
+    window.addEventListener('resize', checkWidth);
+    return () => window.removeEventListener('resize', checkWidth);
+  }, []);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -52,7 +64,11 @@ export default function HeroTwo() {
       {/* Wrapper to make the 3D element stick to the viewport perfectly within THIS section only */}
       <div className="glass-knot-wrapper absolute inset-0 z-0 pointer-events-none">
         <div className="sticky top-0 w-full h-screen">
-          <GlassKnot />
+          {isDesktop ? (
+            <GlassKnot />
+          ) : (
+            <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-900/50 via-neutral-950 to-neutral-950"></div>
+          )}
         </div>
       </div>
 
@@ -64,7 +80,7 @@ export default function HeroTwo() {
             <span className="font-mono text-xs tracking-widest text-neutral-500 block mb-2">
               03 / PERSPECTIVE
             </span>
-            <h2 className="font-serif text-3xl font-light text-neutral-100 italic leading-snug">
+            <h2 className="font-serif text-[clamp(2rem,6vw,3.5rem)] font-light text-neutral-100 italic leading-[1.05]">
               A frame, sculpted in stone &amp; light
             </h2>
           </div>
@@ -87,7 +103,7 @@ export default function HeroTwo() {
               alt="Seaside Resort Facade"
               className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/40 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/10 to-transparent pointer-events-none" />
             <div className="absolute top-2 left-2 text-neutral-400 font-mono text-[10px] z-10">+</div>
             <div className="absolute top-2 right-2 text-neutral-400 font-mono text-[10px] z-10">+</div>
             <div className="absolute bottom-2 left-2 text-neutral-400 font-mono text-[10px] z-10">+</div>
@@ -101,10 +117,10 @@ export default function HeroTwo() {
             <span className="font-mono text-[10px] tracking-widest text-neutral-500 uppercase mb-3">
               03_A / ESSENCE
             </span>
-            <h3 className="font-display text-2xl lg:text-3xl font-medium tracking-tight text-white uppercase mb-6">
+            <h3 className="font-display text-[clamp(1.5rem,5vw,2.25rem)] font-medium tracking-tight text-white uppercase mb-6">
               Geometric harmony.
             </h3>
-            <p className="font-sans text-neutral-400 text-sm leading-relaxed mb-8">
+            <p className="font-sans text-[clamp(0.85rem,3vw,1rem)] text-neutral-400 leading-relaxed mb-8">
               The minimalist language of form allows the eye to wander. Natural stone meets floor-to-ceiling glass fronts—a dialogue of weight, transparency, and marine light.
             </p>
           </div>

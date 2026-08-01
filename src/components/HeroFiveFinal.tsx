@@ -52,12 +52,12 @@ export default function HeroFiveFinal({ onBookRoom }: HeroFiveFinalProps) {
         </div>
 
         {/* Main headline */}
-        <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light text-white tracking-tight leading-tight mb-8">
+        <h2 className="font-serif text-[clamp(2.5rem,8vw,5.5rem)] font-light text-white tracking-tight leading-[1.05] mb-8">
           Find your place on the coast.
         </h2>
 
         {/* Subtitle */}
-        <p className="font-sans text-neutral-400 text-sm sm:text-base leading-relaxed max-w-xl mb-12">
+        <p className="font-sans text-[clamp(0.85rem,3vw,1rem)] text-neutral-400 leading-relaxed max-w-xl mb-12">
           Reservations for the upcoming season are now open. Experience absolute privacy within our private coastal reserve.
         </p>
 
@@ -68,7 +68,7 @@ export default function HeroFiveFinal({ onBookRoom }: HeroFiveFinalProps) {
             alt="Arched Sunset Portal"
             className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-103 transition-transform duration-700 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/50 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/10 to-transparent pointer-events-none" />
         </div>
 
         {/* Dual CTA buttons */}

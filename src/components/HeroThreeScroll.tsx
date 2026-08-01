@@ -109,7 +109,7 @@ export default function HeroThreeScroll({ onBookRoom }: HeroThreeScrollProps) {
             </span>
             <span className="font-mono text-[8px] bg-neutral-900 text-neutral-400 border border-neutral-800 px-1">ST_TRACK</span>
           </div>
-          <h2 className="font-serif text-xl font-medium tracking-tight text-white mt-1">
+          <h2 className="font-serif text-[clamp(1.25rem,3vw,1.5rem)] font-medium tracking-tight text-white mt-1">
             Exclusive Rooms &amp; Private Sanctuaries
           </h2>
         </div>
@@ -148,7 +148,7 @@ export default function HeroThreeScroll({ onBookRoom }: HeroThreeScrollProps) {
                 {/* Left: text content */}
                 <div className="lg:col-span-5 flex flex-col justify-center">
                   <div className="flex items-baseline gap-3 mb-4">
-                    <span className="font-serif text-5xl font-light text-neutral-800">
+                    <span className="font-serif text-[clamp(2.5rem,6vw,4rem)] font-light text-neutral-800">
                       {slide.number}
                     </span>
                     <span className="font-mono text-[10px] tracking-widest text-neutral-500 uppercase">
@@ -156,11 +156,11 @@ export default function HeroThreeScroll({ onBookRoom }: HeroThreeScrollProps) {
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-3xl sm:text-4xl font-medium text-white tracking-tight mb-4">
+                  <h3 className="font-serif text-[clamp(1.75rem,5vw,2.5rem)] font-medium text-white tracking-tight mb-4">
                     {slide.title}
                   </h3>
 
-                  <p className="font-sans text-neutral-400 text-sm leading-relaxed mb-6 max-w-md">
+                  <p className="font-sans text-[clamp(0.85rem,3vw,1rem)] text-neutral-400 leading-relaxed mb-6 max-w-md">
                     {slide.description}
                   </p>
 
@@ -192,7 +192,7 @@ export default function HeroThreeScroll({ onBookRoom }: HeroThreeScrollProps) {
                           transform: `scale(${getScale(0)})`,
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/40 to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/10 to-transparent pointer-events-none" />
                     </div>
                   )}
 
@@ -232,7 +232,7 @@ export default function HeroThreeScroll({ onBookRoom }: HeroThreeScrollProps) {
                             transform: `scale(${getScale(2)})`,
                           }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/40 to-transparent pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/10 to-transparent pointer-events-none" />
                       </div>
                     </div>
                   )}

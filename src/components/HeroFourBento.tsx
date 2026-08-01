@@ -16,7 +16,7 @@ export default function HeroFourBento() {
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
           </div>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
+          <h2 className="font-serif text-[clamp(2rem,7vw,4.5rem)] leading-[1.05] font-light text-white tracking-tight">
             Structured Angles.
           </h2>
         </div>
@@ -30,7 +30,7 @@ export default function HeroFourBento() {
               <span className="font-mono text-[10px] tracking-widest text-neutral-500 uppercase">
                 04-A / DIMENSION
               </span>
-              <div className="font-serif text-5xl font-light text-white mt-4">
+              <div className="font-serif text-[clamp(2.5rem,6vw,4rem)] font-light text-white mt-4">
                 180°
               </div>
             </div>
@@ -39,7 +39,7 @@ export default function HeroFourBento() {
               <h3 className="font-sans text-xs tracking-wider uppercase font-semibold text-neutral-200 mb-2">
                 PANORAMA EFFECT
               </h3>
-              <p className="font-sans text-neutral-400 text-xs leading-relaxed">
+              <p className="font-sans text-neutral-400 text-[clamp(0.8rem,2.5vw,0.9rem)] leading-relaxed">
                 All residential suites feature an uninterrupted, wide-angle southwest orientation that guarantees maximum sunlight and coastal exposure.
               </p>
             </div>
@@ -52,7 +52,7 @@ export default function HeroFourBento() {
               alt="Terrace Landscape View"
               className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-102 transition-transform duration-700 ease-out"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/50 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/10 to-transparent pointer-events-none" />
           </div>
 
           {/* Card 3: Tall vertical image (col span 6) */}
@@ -62,7 +62,7 @@ export default function HeroFourBento() {
               alt="Architectural Glazing Detail"
               className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-103 transition-transform duration-700 ease-out"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/40 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/10 to-transparent pointer-events-none" />
           </div>
 
           {/* Card 4: Specifications list (col span 6) */}
@@ -72,7 +72,7 @@ export default function HeroFourBento() {
                 04-D / SPECIFICATIONS
               </span>
 
-              <h3 className="font-serif text-2xl lg:text-3xl font-light text-white tracking-tight mt-4 mb-6">
+              <h3 className="font-serif text-[clamp(1.75rem,5vw,2.5rem)] leading-[1.05] font-light text-white tracking-tight mt-4 mb-6">
                 Architectural Details
               </h3>
 
