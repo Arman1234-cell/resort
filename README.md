@@ -5,7 +5,11 @@
        width="100%"
        alt="Green Coast Resort"/>
 </p>
-
+<p align="center">
+  <a href="https://halc.site/" target="_blank">
+    🚀 <strong>Visit Live Website</strong>
+  </a>
+</p>
 <p align="center">
 AI-Powered Luxury Resort Booking Platform
 </p>
