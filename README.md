@@ -121,9 +121,14 @@ width="80%">
 ## 📊 Admin Dashboard
 
 Manage bookings, guests, rooms, revenue, and analytics from a centralized dashboard.
+<p align="left">
+  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/01cfea8e857abb681bfc0f067ef60231c48a26c4/Admin_features.png" width="80%" alt="Admin Features"/>
+</p>
+<p>
+  
 
+</p>
 https://github.com/user-attachments/assets/de69092b-6cf4-4f88-8678-fe2cdff0d9eb
-
 ---
 
 ## 🌐 Interactive 3D Experience
