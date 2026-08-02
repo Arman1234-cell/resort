@@ -111,7 +111,7 @@ A powerful command center for resort management. Features include comprehensive 
 A high-performance WebGL 3D element integrated directly into the scrolling experience on desktop. Utilizing React Three Fiber and Three.js, it provides a breathtaking, interactive visual layer that responds to user scroll without compromising performance.
 
 <p align="center">
-  <img src="images/3d-architecture.png" width="100%" alt="3D Architecture Component" />
+  <img src="https://www.image2url.com/r2/default/videos/1785658023980-9a8dd66d-5b8d-4edc-9021-5dcaab021985.mp4" width="100%" alt="3D Architecture Component" />
 </p>
 
 <br />
