@@ -128,7 +128,22 @@ Manage bookings, guests, rooms, revenue, and analytics from a centralized dashbo
   
 
 </p>
-https://github.com/user-attachments/assets/de69092b-6cf4-4f88-8678-fe2cdff0d9eb
+
+---
+
+
+
+
+
+
+
+
+
+
+
+https://github.com/user-attachments/assets/4bbb7a44-11c1-4edd-8d10-59f03eedfba2
+
+
 ---
 
 ## 🌐 Interactive 3D Experience
