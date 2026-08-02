@@ -1,328 +1,138 @@
-<div align="center">
-  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/0dad8f247665d190530f99fcdd955006db1e7fe2/ChatGPT%20Image%20Aug%201%2C%202026%2C%2005_18_11%20PM.png" width="100%" alt="Green Coast Resort"/>
+<h1 align="center">🌴 Green Coast Resort</h1>
 
-  <br />
-  <br />
+<p align="center">
+  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/0dad8f247665d190530f99fcdd955006db1e7fe2/ChatGPT%20Image%20Aug%201%2C%202026%2C%2005_18_11%20PM.png"
+       width="90%"
+       alt="Green Coast Resort"/>
+</p>
 
-  <h1>Green Coast Resort</h1>
-  
-  <h3>AI-Powered Luxury Resort Booking Platform</h3>
+<p align="center">
+AI-Powered Luxury Resort Booking Platform
+</p>
 
-  <p align="center">
-    A modern full-stack resort booking platform that delivers a seamless experience for guests and resort owners through AI-powered concierge services, secure authentication, online booking, payment integration, and a powerful management dashboard.
-  </p>
+<p align="center">
+A premium full-stack booking platform featuring AI concierge, secure authentication, online reservations, Razorpay payments, and a complete resort management dashboard.
+</p>
 
-  <p align="center">
-    <img src="https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge" alt="Build Status" />
-    <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License" />
-    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-    <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
-    <img src="https://img.shields.io/badge/Razorpay-02042B?style=for-the-badge&logo=razorpay&logoColor=3395FF" alt="Razorpay" />
-    <img src="https://img.shields.io/badge/Responsive-Yes-success?style=for-the-badge" alt="Responsive" />
-    <img src="https://img.shields.io/badge/AI_Powered-Enabled-9cf?style=for-the-badge" alt="AI Powered" />
-  </p>
-</div>
+<p align="center">
+
+<img src="https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge"/>
+
+<img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+
+<img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"/>
+
+<img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black"/>
+
+<img src="https://img.shields.io/badge/Razorpay-02042B?style=for-the-badge&logo=razorpay&logoColor=3395FF"/>
+
+<img src="https://img.shields.io/badge/Responsive-Yes-success?style=for-the-badge"/>
+
+</p>
+
+<p align="center">
+
+<a href="#">
+<img src="https://img.shields.io/badge/🌐_Live_Demo-black?style=for-the-badge"/>
+</a>
+
+<a href="#">
+<img src="https://img.shields.io/badge/🎥_Demo_Video-red?style=for-the-badge"/>
+</a>
+
+<a href="#">
+<img src="https://img.shields.io/badge/📄_Documentation-blue?style=for-the-badge"/>
+</a>
+
+</p>
 
 ---
 
-<br />
+# ✨ Overview
 
-## 📖 Project Overview
+Green Coast Resort is a modern luxury resort booking platform built with **React, TypeScript, Firebase, Tailwind CSS, and Razorpay**.
 
-**Green Coast Resort** is a comprehensive, production-ready SaaS booking application designed for luxury boutique hotels and coastal resorts. 
-
-Built with modern web technologies, this platform is designed to provide guests with a frictionless reservation experience—from exploring premium accommodations to securely booking their stay. For resort management, it provides an expansive, data-driven dashboard to monitor occupancy, revenue, and guest interactions. 
-
-Whether you are a developer looking for architectural inspiration, a recruiter evaluating full-stack capabilities, or a resort owner seeking a digital transformation, Green Coast Resort demonstrates how elegant design meets powerful backend infrastructure.
-
-<br />
+It delivers a premium guest experience with secure bookings, AI-powered assistance, responsive UI, online payments, and a complete admin dashboard for resort management.
 
 ---
 
-<br />
+# 🚀 Features
 
-## ✨ Features
+| Feature | Description |
+|----------|-------------|
+| 🤖 AI Concierge | WhatsApp-powered guest assistant |
+| 🔐 Google Authentication | One-click secure login |
+| 🏨 Smart Booking | Live availability & reservations |
+| 💳 Razorpay Payments | Secure online checkout |
+| 📊 Admin Dashboard | Booking & revenue management |
+| 📱 Responsive UI | Mobile, Tablet & Desktop |
+| 🎨 Premium Design | Luxury-inspired interface |
+| ⚡ High Performance | Built with Vite & React |
 
-### 1. Live Resort Website
-A meticulously crafted, highly immersive frontend that showcases the resort's premium offerings. Featuring fluid typography, elegant animations, and a focus on high-resolution photography to drive conversions.
+---
 
+# 📸 Feature Showcase
 
+## 🤖 AI Concierge
 
-<br />
+AI-powered WhatsApp concierge providing instant guest support.
 
-### 2. Fully Responsive Design
-Flawless cross-device experience. The layout dynamically adapts from ultra-wide desktop monitors down to mobile devices (iPhone SE through Galaxy S20 Ultra), guaranteeing a premium, uncompromised aesthetic on any screen.
-
-
-
-<br />
-
-### 3. AI WhatsApp Concierge
-A 24/7 intelligent virtual assistant integrated directly into the platform. Guests can instantly inquire about room information, current pricing, luxury amenities, Wi-Fi access, check-in/check-out times, and pet policies.
-
-<p align="center">
-  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/cbbb33a16f3a88eee8522644e0a37a8fc02ef3ff/ChatGPT%20Image%20Aug%202%2C%202026%2C%2003_16_00%20PM.png" />
+<p align="left">
+  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/cbbb33a16f3a88eee8522644e0a37a8fc02ef3ff/ChatGPT%20Image%20Aug%202%2C%202026%2C%2003_16_00%20PM.png"
+       width="38%"
+       alt="AI Concierge">
 </p>
 
-<br />
+---
 
-### 4. Google Authentication
-Secure, frictionless onboarding via Google Login and Sign Up. The system includes automatic, real-time notifications alerting guests upon login, logout, booking confirmation, and when a payment receipt is generated.
+## 🔐 Google Authentication
 
-<p align="center">
-  <img src="images/google-login.png" width="100%" alt="Google Login" />
+Secure sign in with Google Authentication and instant notifications.
+
+<p align="left">
+<img src="https://github.com/Arman1234-cell/readme_file_images/blob/9dd4c87823f60522df721f3a37c873701a16b331/ChatGPT%20Image%20Aug%202%2C%202026%2C%2003_25_34%20PM.png"
+width="38%">
 </p>
 
-<br />
+---
 
-### 5. Smart Booking System
-An intuitive reservation flow featuring live availability, dynamic date picking, detailed room selection, guest information capture, and a transparent booking summary.
+## 📅 Smart Booking
 
-<p align="center">
-  <img src="images/booking-system.png" width="100%" alt="Booking System" />
+Modern reservation experience with room selection, date picker, pricing summary, and guest details.
+
+<p align="left">
+<img src="https://github.com/Arman1234-cell/readme_file_images/blob/9dd4c87823f60522df721f3a37c873701a16b331/ChatGPT%20Image%20Aug%202%2C%202026%2C%2003_22_00%20PM.png"
+width="40%">
 </p>
 
-<br />
+---
 
-### 6. Razorpay Payment Gateway
-Enterprise-grade financial transactions. Fully encrypted checkout process providing secure payments, instant booking confirmation, and automated digital payment receipts.
+## 💳 Razorpay Payments
 
-<p align="center">
-  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/760da8e55b5f15f7b04392bd75959b3e46192542/ChatGPT%20Image%20Aug%201%2C%202026%2C%2007_08_55%20PM.png" width="100%" alt="Payment Gateway" />
+Fast and secure checkout with encrypted online payments.
+
+<p align="left">
+<img src="https://github.com/Arman1234-cell/readme_file_images/blob/760da8e55b5f15f7b04392bd75959b3e46192542/ChatGPT%20Image%20Aug%201%2C%202026%2C%2007_08_55%20PM.png"
+width="80%">
 </p>
 
-<br />
+---
 
-### 7. Admin Dashboard
-A powerful command center for resort management. Features include comprehensive revenue analytics, booking overviews, live occupancy rates, guest databases, room management, and detailed financial reports.
+## 📊 Admin Dashboard
+
+Manage bookings, guests, rooms, revenue, and analytics from a centralized dashboard.
 
 https://github.com/user-attachments/assets/de69092b-6cf4-4f88-8678-fe2cdff0d9eb
 
-<br />
+---
 
-### 8. Interactive 3D Architecture
-A high-performance WebGL 3D element integrated directly into the scrolling experience on desktop. Utilizing React Three Fiber and Three.js, it provides a breathtaking, interactive visual layer that responds to user scroll without compromising performance.
-<img width="400" height="225" alt="3d element (1) (1)" src="https://github.com/user-attachments/assets/8a312392-99e9-4e01-9d75-bb5914c2a31e" />
+## 🌐 Interactive 3D Experience
 
+High-performance Three.js and React Three Fiber animations create an immersive browsing experience.
 
-
-<br />
-
-### 9. Immersive Image Galleries
-Engaging, custom-built layout sections designed to showcase the property. Includes a seamless horizontal scrolling gallery for room showcases and an elegant masonry-style Bento grid for architectural details.
-
-<p align="center">
-  <img src="images/image-galleries.png" width="100%" alt="Immersive Image Galleries" />
+<p align="left">
+<img src="https://github.com/user-attachments/assets/8a312392-99e9-4e01-9d75-bb5914c2a31e"
+width="40%">
 </p>
 
-<br />
-
 ---
-
-<br />
-
-## 🎯 Project Highlights
-
-- ✅ **AI Concierge:** 24/7 automated guest support
-- ✅ **Google Authentication:** Secure & instant user onboarding
-- ✅ **Responsive Design:** Premium layout across desktop, tablet, and mobile
-- ✅ **Admin Dashboard:** Comprehensive business analytics and management
-- ✅ **Razorpay Payments:** Encrypted, real-time transaction processing
-- ✅ **Smart Booking:** Live availability and seamless reservations
-- ✅ **Interactive 3D Elements:** WebGL-powered scrolling visuals
-- ✅ **Immersive Layouts:** Custom horizontal scroll and bento grids
-- ✅ **Live Website:** A production-ready, highly optimized storefront
-
-<br />
-
----
-
-<br />
-
-## 📸 Screenshots
-
-<p align="center">
-  <img src="images/screenshot1.png" width="48%" alt="Screenshot 1" />
-  &nbsp;
-  <img src="images/screenshot2.png" width="48%" alt="Screenshot 2" />
-</p>
-<p align="center">
-  <img src="images/screenshot3.png" width="48%" alt="Screenshot 3" />
-  &nbsp;
-  <img src="images/screenshot4.png" width="48%" alt="Screenshot 4" />
-</p>
-
-<br />
-
----
-
-<br />
-
-## 🛠 Tech Stack
-
-| Category | Technologies |
-|----------|--------------|
-| **Frontend** | React, TypeScript, Vite |
-| **Backend** | Firebase, Node.js |
-| **Database** | Firestore (NoSQL) |
-| **Authentication** | Firebase Auth (Google Provider) |
-| **Payments** | Razorpay API |
-| **Styling** | Tailwind CSS, GSAP, Framer Motion |
-| **Hosting** | Firebase Hosting / Vercel |
-
-<br />
-
----
-
-<br />
-
-## 📁 Project Structure
-
-```text
-resort/
-├── api/                   # Backend API and Webhook Handlers
-├── public/                # Static assets, fonts, and raw images
-├── src/
-│   ├── components/        # Reusable UI components (Hero, Buttons, Modals)
-│   ├── pages/             # Application routes (Home, Booking, Dashboard)
-│   ├── context/           # Global State (AuthContext, BookingContext)
-│   ├── lib/               # Utility functions, API clients, Firebase config
-│   ├── styles/            # Global CSS and Tailwind configurations
-│   ├── types/             # TypeScript interfaces and type definitions
-│   ├── App.tsx            # Main application entry point
-│   └── main.tsx           # React DOM rendering
-├── .env.example           # Example environment variables
-├── package.json           # Dependencies and scripts
-├── tailwind.config.js     # Tailwind CSS configuration
-├── tsconfig.json          # TypeScript configuration
-└── vite.config.ts         # Vite bundler configuration
-```
-
-<br />
-
----
-
-<br />
-
-## 🚀 Installation
-
-Follow these steps to set up the project locally on your machine.
-
-**1. Clone the repository**
-```bash
-git clone https://github.com/Arman1234-cell/resort.git
-cd resort
-```
-
-**2. Install dependencies**
-```bash
-npm install
-# or
-yarn install
-```
-
-**3. Configure Environment Variables**
-Copy the example environment file and fill in your keys.
-```bash
-cp .env.example .env
-```
-
-**4. Run the Development Server**
-```bash
-npm run dev
-```
-The application will be available at `http://localhost:5173`.
-
-**5. Build for Production**
-```bash
-npm run build
-```
-
-<br />
-
----
-
-<br />
-
-## 🔐 Environment Variables
-
-To run this project, you will need to add the following environment variables to your `.env` file. Do not commit your actual `.env` file to version control.
-
-```env
-# Firebase Configuration
-VITE_FIREBASE_API_KEY="your_firebase_api_key"
-VITE_FIREBASE_AUTH_DOMAIN="your_firebase_auth_domain"
-VITE_FIREBASE_PROJECT_ID="your_firebase_project_id"
-VITE_FIREBASE_STORAGE_BUCKET="your_firebase_storage_bucket"
-VITE_FIREBASE_MESSAGING_SENDER_ID="your_sender_id"
-VITE_FIREBASE_APP_ID="your_firebase_app_id"
-
-# Razorpay Configuration
-VITE_RAZORPAY_KEY_ID="your_razorpay_key_id"
-RAZORPAY_KEY_SECRET="your_razorpay_secret"
-
-# AI Concierge (WhatsApp/OpenAI)
-VITE_OPENAI_API_KEY="your_openai_api_key"
-VITE_WHATSAPP_API_TOKEN="your_whatsapp_token"
-```
-
-<br />
-
----
-
-<br />
-
-## 🗺 Future Roadmap
-
-- [ ] AI Room Recommendations based on user preference history
-- [ ] Automated Email Notifications via SendGrid/Resend
-- [ ] Multi-language Support (i18n) for international guests
-- [ ] Advanced Analytics Improvements (Heatmaps & Drop-off tracking)
-- [ ] PWA Support for native-like mobile experience
-
-<br />
-
----
-
-<br />
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-<br />
-
-<div align="center">
-  <i>Designed and developed for the modern web.</i>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-https://github.com/user-attachments/assets/dff2a7d6-de0b-46ce-890b-d4c6f7008830
-
-
-
-
-
-
-
-
-
-
-
-
-
-
