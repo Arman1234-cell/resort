@@ -60,6 +60,7 @@ It delivers a premium guest experience with secure bookings, AI-powered assistan
 
 | Feature | Description |
 |----------|-------------|
+| 🌐 Live Project | Deployed on a custom domain with production-ready hosting |
 | 🔐 Google Authentication | Secure Google Sign-In |
 | 💳 Razorpay Payments | Fast & secure online checkout |
 | 📧 Instant Notifications | Login, booking, payment & daily admin reports |
