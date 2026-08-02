@@ -106,7 +106,7 @@ A powerful command center for resort management. Features include comprehensive 
 </p>
 <p align="center">
   <video
-    src="https://raw.githubusercontent.com/Arman1234-cell/readme_file_images/f6e9447016b8724560af12ab18e3ac21f6abbb73/Screen%20Recording%202026-08-02%20141026%20(online-video-cutter.com)%20(1).mp4"
+    src=""
     width="100%"
     autoplay
     muted
@@ -123,7 +123,7 @@ A high-performance WebGL 3D element integrated directly into the scrolling exper
 
 <p align="center">
   <video
-    src="https://www.image2url.com/r2/default/videos/1785658023980-9a8dd66d-5b8d-4edc-9021-5dcaab021985.mp4"
+    src="[https://www.image2url.com/r2/default/videos/1785658023980-9a8dd66d-5b8d-4edc-9021-5dcaab021985.mp4](https://github.com/Arman1234-cell/readme_file_images/blob/d5fe2c438397d4610c86e533d3006239987c7dc0/ScreenRecording2026-08-01172653-ezgif.com-video-to-gif-converter%20(2).gif)"
     width="100%"
     autoplay
     muted
