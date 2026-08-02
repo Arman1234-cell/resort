@@ -47,18 +47,14 @@ Whether you are a developer looking for architectural inspiration, a recruiter e
 ### 1. Live Resort Website
 A meticulously crafted, highly immersive frontend that showcases the resort's premium offerings. Featuring fluid typography, elegant animations, and a focus on high-resolution photography to drive conversions.
 
-<p align="center">
-  <img src="images/live-website.png" width="100%" alt="Live Website" />
-</p>
+
 
 <br />
 
 ### 2. Fully Responsive Design
 Flawless cross-device experience. The layout dynamically adapts from ultra-wide desktop monitors down to mobile devices (iPhone SE through Galaxy S20 Ultra), guaranteeing a premium, uncompromised aesthetic on any screen.
 
-<p align="center">
-  <img src="images/responsive.png" width="100%" alt="Responsive Design" />
-</p>
+
 
 <br />
 
@@ -66,7 +62,7 @@ Flawless cross-device experience. The layout dynamically adapts from ultra-wide 
 A 24/7 intelligent virtual assistant integrated directly into the platform. Guests can instantly inquire about room information, current pricing, luxury amenities, Wi-Fi access, check-in/check-out times, and pet policies.
 
 <p align="center">
-  <img src="images/whatsapp-bot.png" width="100%" alt="WhatsApp Bot" />
+  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/cbbb33a16f3a88eee8522644e0a37a8fc02ef3ff/ChatGPT%20Image%20Aug%202%2C%202026%2C%2003_16_00%20PM.png" />
 </p>
 
 <br />
@@ -107,19 +103,9 @@ https://github.com/user-attachments/assets/de69092b-6cf4-4f88-8678-fe2cdff0d9eb
 
 ### 8. Interactive 3D Architecture
 A high-performance WebGL 3D element integrated directly into the scrolling experience on desktop. Utilizing React Three Fiber and Three.js, it provides a breathtaking, interactive visual layer that responds to user scroll without compromising performance.
+<img width="400" height="225" alt="3d element (1) (1)" src="https://github.com/user-attachments/assets/8a312392-99e9-4e01-9d75-bb5914c2a31e" />
 
-<p align="center">
-  <video
-    src="[https://www.image2url.com/r2/default/videos/1785658023980-9a8dd66d-5b8d-4edc-9021-5dcaab021985.mp4](https://github.com/Arman1234-cell/readme_file_images/blob/d5fe2c438397d4610c86e533d3006239987c7dc0/ScreenRecording2026-08-01172653-ezgif.com-video-to-gif-converter%20(2).gif)"
-    width="100%"
-    autoplay
-    muted
-    loop
-    playsinline
-  >
-    Your browser does not support the video tag.
-  </video>
-</p>
+
 
 <br />
 
@@ -322,6 +308,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 
+
+
+
+https://github.com/user-attachments/assets/dff2a7d6-de0b-46ce-890b-d4c6f7008830
 
 
 
