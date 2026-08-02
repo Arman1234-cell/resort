@@ -102,7 +102,7 @@ Enterprise-grade financial transactions. Fully encrypted checkout process provid
 A powerful command center for resort management. Features include comprehensive revenue analytics, booking overviews, live occupancy rates, guest databases, room management, and detailed financial reports.
 
 <p align="center">
-  <img src="images/admin-dashboard.png" width="100%" alt="Admin Dashboard" />
+  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/76c3de3bd1b7c37fd59561e28b7ec6e090bf901a/ChatGPT%20Image%20Aug%202%2C%202026%2C%2001_30_50%20PM.png" width="100%" alt="Admin Dashboard" />
 </p>
 
 <br />
