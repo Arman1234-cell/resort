@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://github.com/Arman1234-cell/readme_file_images/blob/b61c214189f76df1955bed3f2652ad3d1a313995/Screenshot%202026-08-02%20140938.png"
-       width="90%"
+       width="100%"
        alt="Green Coast Resort"/>
 </p>
 
