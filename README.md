@@ -1,7 +1,7 @@
 <h1 align="center">🌴 Green Coast Resort</h1>
 
 <p align="center">
-  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/0dad8f247665d190530f99fcdd955006db1e7fe2/ChatGPT%20Image%20Aug%201%2C%202026%2C%2005_18_11%20PM.png"
+  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/b61c214189f76df1955bed3f2652ad3d1a313995/Screenshot%202026-08-02%20140938.png"
        width="90%"
        alt="Green Coast Resort"/>
 </p>
@@ -73,6 +73,47 @@ It delivers a premium guest experience with secure bookings, AI-powered assistan
 
 # 📸 Feature Showcase
 
+## 🔐 Google Authentication
+
+Secure sign in with Google Authentication and instant notifications.
+
+<p align="left">
+<img src="https://github.com/Arman1234-cell/readme_file_images/blob/9dd4c87823f60522df721f3a37c873701a16b331/ChatGPT%20Image%20Aug%202%2C%202026%2C%2003_25_34%20PM.png"
+width="38%">
+</p>
+# 📱 Responsive Design
+
+Green Coast Resort is designed with a **mobile-first** approach, delivering a seamless luxury experience across all screen sizes—from smartphones to ultra-wide desktop displays.
+
+### ✨ Highlights
+
+- 📱 Mobile-First Design
+- 💻 Optimized for Desktop & Laptop
+- 📟 Tablet-Friendly Layouts
+- 🎯 Adaptive Typography & Spacing
+- ⚡ Fast Loading Across Devices
+- 🎨 Pixel-Perfect Responsive UI
+- 🖥️ Supports Ultra-Wide Screens
+- 🌍 Cross-Browser Compatibility
+
+<p align="center">
+  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/0dad8f247665d190530f99fcdd955006db1e7fe2/ChatGPT%20Image%20Aug%201%2C%202026%2C%2005_18_11%20PM.png"
+       width="90%"
+       alt="Responsive Design">
+</p>
+
+### 📐 Supported Devices
+
+| Device | Status |
+|---------|--------|
+| 📱 Mobile | ✅ Fully Optimized |
+| 📟 Tablet | ✅ Fully Optimized |
+| 💻 Laptop | ✅ Fully Optimized |
+| 🖥️ Desktop | ✅ Fully Optimized |
+| 🖥️ Ultra-wide Monitors | ✅ Fully Optimized |
+
+---
+---
 ## 🤖 AI Concierge
 
 AI-powered WhatsApp concierge providing instant guest support.
@@ -83,16 +124,8 @@ AI-powered WhatsApp concierge providing instant guest support.
        alt="AI Concierge">
 </p>
 
----
 
-## 🔐 Google Authentication
 
-Secure sign in with Google Authentication and instant notifications.
-
-<p align="left">
-<img src="https://github.com/Arman1234-cell/readme_file_images/blob/9dd4c87823f60522df721f3a37c873701a16b331/ChatGPT%20Image%20Aug%202%2C%202026%2C%2003_25_34%20PM.png"
-width="38%">
-</p>
 
 ---
 
@@ -106,7 +139,16 @@ width="40%">
 </p>
 
 ---
+## 🌐 Interactive 3D Experience
 
+High-performance Three.js and React Three Fiber animations create an immersive browsing experience.
+
+<p align="left">
+<img src="https://github.com/user-attachments/assets/8a312392-99e9-4e01-9d75-bb5914c2a31e"
+width="40%">
+</p>
+
+---
 ## 💳 Razorpay Payments
 
 Fast and secure checkout with encrypted online payments.
@@ -117,6 +159,22 @@ width="80%">
 </p>
 
 ---
+# 📧 Email & Notification System
+
+Stay informed with automated notifications for both resort administrators and guests. Every important action triggers a professional email, ensuring smooth communication and a premium booking experience.
+
+### ✨ Included Notifications
+
+| Admin | Customer |
+|-------|----------|
+| 📊 Daily Resort Report | 🔐 Login Alert |
+| 📈 Booking Summary | 🚪 Logout Alert |
+| 💰 Revenue Report | 💳 Payment Receipt |
+| 🏨 Occupancy Report | ✅ Booking Confirmation |
+
+<p align="left">
+  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/dd3297153af08368abfdd515ffb72535012555fb/Notifiactions.png" width="90%" alt="Notification System"/>
+</p>
 
 ## 📊 Admin Dashboard
 
@@ -129,8 +187,10 @@ Manage bookings, guests, rooms, revenue, and analytics from a centralized dashbo
 
 </p>
 
----
 
+<P>
+
+</P>
 
 
 
@@ -146,13 +206,4 @@ https://github.com/user-attachments/assets/4bbb7a44-11c1-4edd-8d10-59f03eedfba2
 
 ---
 
-## 🌐 Interactive 3D Experience
 
-High-performance Three.js and React Three Fiber animations create an immersive browsing experience.
-
-<p align="left">
-<img src="https://github.com/user-attachments/assets/8a312392-99e9-4e01-9d75-bb5914c2a31e"
-width="40%">
-</p>
-
----
