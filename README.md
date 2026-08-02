@@ -104,7 +104,18 @@ A powerful command center for resort management. Features include comprehensive 
 <p align="center">
   <img src="https://github.com/Arman1234-cell/readme_file_images/blob/76c3de3bd1b7c37fd59561e28b7ec6e090bf901a/ChatGPT%20Image%20Aug%202%2C%202026%2C%2001_30_50%20PM.png" width="100%" alt="Admin Dashboard" />
 </p>
-
+<p align="center">
+  <video
+    src="https://raw.githubusercontent.com/Arman1234-cell/readme_file_images/f6e9447016b8724560af12ab18e3ac21f6abbb73/Screen%20Recording%202026-08-02%20141026%20(online-video-cutter.com)%20(1).mp4"
+    width="100%"
+    autoplay
+    muted
+    loop
+    playsinline
+    controls
+  >
+  </video>
+</p>
 <br />
 
 ### 8. Interactive 3D Architecture
