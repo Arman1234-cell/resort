@@ -101,21 +101,8 @@ Enterprise-grade financial transactions. Fully encrypted checkout process provid
 ### 7. Admin Dashboard
 A powerful command center for resort management. Features include comprehensive revenue analytics, booking overviews, live occupancy rates, guest databases, room management, and detailed financial reports.
 
-<p align="center">
-  <img src="https://github.com/Arman1234-cell/readme_file_images/blob/76c3de3bd1b7c37fd59561e28b7ec6e090bf901a/ChatGPT%20Image%20Aug%202%2C%202026%2C%2001_30_50%20PM.png" width="100%" alt="Admin Dashboard" />
-</p>
-<p align="center">
-  <video
-    src=""
-    width="100%"
-    autoplay
-    muted
-    loop
-    playsinline
-    controls
-  >
-  </video>
-</p>
+https://github.com/user-attachments/assets/de69092b-6cf4-4f88-8678-fe2cdff0d9eb
+
 <br />
 
 ### 8. Interactive 3D Architecture
@@ -347,6 +334,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 
-https://github.com/user-attachments/assets/de69092b-6cf4-4f88-8678-fe2cdff0d9eb
 
 
