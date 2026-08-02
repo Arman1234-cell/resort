@@ -60,15 +60,15 @@ It delivers a premium guest experience with secure bookings, AI-powered assistan
 
 | Feature | Description |
 |----------|-------------|
-| 🤖 AI Concierge | WhatsApp-powered guest assistant |
-| 🔐 Google Authentication | One-click secure login |
-| 🏨 Smart Booking | Live availability & reservations |
-| 💳 Razorpay Payments | Secure online checkout |
-| 📊 Admin Dashboard | Booking & revenue management |
-| 📱 Responsive UI | Mobile, Tablet & Desktop |
-| 🎨 Premium Design | Luxury-inspired interface |
-| ⚡ High Performance | Built with Vite & React |
-
+| 🔐 Google Authentication | Secure Google Sign-In |
+| 💳 Razorpay Payments | Fast & secure online checkout |
+| 📧 Instant Notifications | Login, booking, payment & daily admin reports |
+| 📊 Admin Dashboard | Revenue, bookings & occupancy analytics |
+| 🤖 AI Concierge | 24/7 AI-powered WhatsApp assistant |
+| 🏨 Smart Booking | Real-time room booking system |
+| 📱 Responsive UI | Pixel-perfect across all devices |
+| 🎨 Premium Experience | Modern luxury-inspired interface |
+| ⚡ Optimized Performance | Fast loading with Vite & React |
 ---
 
 # 📸 Feature Showcase
