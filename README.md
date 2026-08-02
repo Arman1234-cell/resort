@@ -81,28 +81,19 @@ Secure sign in with Google Authentication and instant notifications.
 <img src="https://github.com/Arman1234-cell/readme_file_images/blob/9dd4c87823f60522df721f3a37c873701a16b331/ChatGPT%20Image%20Aug%202%2C%202026%2C%2003_25_34%20PM.png"
 width="38%">
 </p>
-# 📱 Responsive Design
+
+## 📱 Responsive Design
 
 Green Coast Resort is designed with a **mobile-first** approach, delivering a seamless luxury experience across all screen sizes—from smartphones to ultra-wide desktop displays.
 
-### ✨ Highlights
-
-- 📱 Mobile-First Design
-- 💻 Optimized for Desktop & Laptop
-- 📟 Tablet-Friendly Layouts
-- 🎯 Adaptive Typography & Spacing
-- ⚡ Fast Loading Across Devices
-- 🎨 Pixel-Perfect Responsive UI
-- 🖥️ Supports Ultra-Wide Screens
-- 🌍 Cross-Browser Compatibility
-
-<p align="center">
+##
+<p align="left">
   <img src="https://github.com/Arman1234-cell/readme_file_images/blob/0dad8f247665d190530f99fcdd955006db1e7fe2/ChatGPT%20Image%20Aug%201%2C%202026%2C%2005_18_11%20PM.png"
        width="90%"
        alt="Responsive Design">
 </p>
 
-### 📐 Supported Devices
+## 📐 Supported Devices
 
 | Device | Status |
 |---------|--------|
@@ -112,7 +103,6 @@ Green Coast Resort is designed with a **mobile-first** approach, delivering a se
 | 🖥️ Desktop | ✅ Fully Optimized |
 | 🖥️ Ultra-wide Monitors | ✅ Fully Optimized |
 
----
 ---
 ## 🤖 AI Concierge
 
